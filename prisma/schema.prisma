@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// SQLite doesn't support enums — use String fields with validation
+
+model Domain {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  vault     Boolean  @default(false)
+  sortOrder Int      @default(0)
+  spaces    Space[]
+  createdAt DateTime @default(now())
+}
+
+model Space {
+  id       Int        @id @default(autoincrement())
+  domain   Domain     @relation(fields: [domainId], references: [id])
+  domainId Int
+  name     String
+  slug     String
+  mode     String     @default("creation") // creation | operation
+  captures Capture[]
+
+  @@unique([domainId, slug])
+}
+
+model Capture {
+  id         Int         @id @default(autoincrement())
+  space      Space       @relation(fields: [spaceId], references: [id])
+  spaceId    Int
+  type       String // task|idea|assertion|reflection|reference|concept|routine
+  content    String
+  status     String?
+  confidence String?
+  deadline   DateTime?
+  frequency  String?
+  source     String?
+  capRef     String?     @unique // cap-001, cap-002...
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  fromConnections CaptureConnection[] @relation("from")
+  toConnections   CaptureConnection[] @relation("to")
+  events          Event[]
+}
+
+model CaptureConnection {
+  id           Int     @id @default(autoincrement())
+  from         Capture @relation("from", fields: [fromId], references: [id])
+  fromId       Int
+  to           Capture @relation("to", fields: [toId], references: [id])
+  toId         Int
+  relationType String
+}
+
+model Event {
+  id        Int      @id @default(autoincrement())
+  capture   Capture  @relation(fields: [captureId], references: [id])
+  captureId Int
+  action    String
+  snapshot  String? // JSON string
+  createdAt DateTime @default(now())
+}

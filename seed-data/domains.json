@@ -1,0 +1,9 @@
+{
+  "finca": { "name": "Finca", "spaces": ["pajarillo", "legal"], "vault": false },
+  "vecino": { "name": "Vecino", "spaces": ["editorial", "producto", "republica-malandra"], "vault": false },
+  "canticuento": { "name": "Canticuento", "spaces": ["cuentos", "producto"], "vault": false },
+  "personal": { "name": "Personal", "spaces": ["crecimiento", "maximas"], "vault": true },
+  "familia": { "name": "Familia", "spaces": ["hijos", "hogar"], "vault": false },
+  "abeja": { "name": "Abeja", "spaces": ["diseño", "meta"], "vault": false },
+  "sandbox": { "name": "Sandbox", "spaces": ["ideas"], "vault": false }
+}
