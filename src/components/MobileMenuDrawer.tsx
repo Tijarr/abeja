@@ -52,8 +52,7 @@ export default function MobileMenuDrawer({ children }: { children: React.ReactNo
           <div className="absolute inset-0" style={{ background: 'rgba(0,0,0,0.55)' }} />
           {/* Panel */}
           <div
-            className="absolute left-0 top-0 bottom-0 overflow-y-auto"
-            style={{ width: '280px' }}
+            className="absolute inset-0 overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             {/* Close button dentro del drawer */}

@@ -1,6 +1,21 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Normalize task title to start with infinitive verb
+function normalizeTareaTitle(text: string): string {
+  // Take first sentence
+  let t = text.split(/[.\n]/)[0].trim()
+  // Strip leading filler phrases
+  const fillers = [
+    /^(hay que|tengo que|necesito|se debe|se necesita|debemos|debes|necesitamos|quiero|vamos a|voy a|se requiere|falta|pendiente[:\s]+)/i,
+    /^(hacer|realizar|ejecutar)\s+que\s+/i,
+  ]
+  for (const f of fillers) t = t.replace(f, '')
+  // Capitalize first letter
+  t = t.charAt(0).toUpperCase() + t.slice(1)
+  return t.substring(0, 80)
+}
+
 // GET /api/capture?domain=&space=&type=&limit=&offset=
 export async function GET(req: Request) {
   try {
@@ -75,7 +90,10 @@ export async function POST(req: Request) {
     const capRef = `cap-${String(lastNum + 1).padStart(3, '0')}`
 
     // Auto-generate title from body
-    const autoTitle = title || body.split('\n')[0].substring(0, 80)
+    const rawTitle = title || body.split('\n')[0]
+    const autoTitle = (!title && (type === 'tarea' || type === 'task'))
+      ? normalizeTareaTitle(rawTitle)
+      : rawTitle.substring(0, 80)
 
     const capture = await prisma.capture.create({
       data: {
