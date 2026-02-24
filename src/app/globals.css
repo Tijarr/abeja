@@ -18,6 +18,12 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Mobile text scale — Slack/Discord proportions */
+@media (max-width: 768px) {
+  html { font-size: 15px; }
 }
 
 * {
