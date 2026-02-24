@@ -2,7 +2,7 @@
 
 ### [2025-08-06 13:28] cap-064
 - **Type**: idea
-- **Content**: Gift a second language: música personalizada en español e inglés, la misma canción al tiempo
+- **Content**: Gift a second language: música personalizada en español e inglés, la misma canción al tiempo.
 
 ### [2025-08-24 09:48] cap-065
 - **Type**: idea
@@ -18,13 +18,13 @@
 
 ### [2025-12-31 18:45] cap-068
 - **Type**: task
-- **Content**: Usar el extractor de YouTube (bookmark) para seguir encontrando painpoints de padres para mi app
+- **Content**: Investigar painpoints de papás para la app. Fuentes: YouTube (extractor), Reddit, X, y especialmente búsquedas de papás en Google. Entender qué buscan, qué les duele, qué necesitan.
 - **Status**: open
 
 ### [2025-12-31 13:37] cap-069
 - **Type**: task
-- **Content**: Revisar posts de La Tortuga con cuáles son las necesidades de los papás y avanzar en el chat
-- **Status**: open
+- **Content**: [ELIMINADA — fusionada con cap-068]
+- **Status**: done
 
 ### [2025-06-26 14:33] cap-070
 - **Type**: concept

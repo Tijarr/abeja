@@ -2,77 +2,88 @@
 
 ### [2025-08-10 21:37] cap-019
 - **Type**: idea
-- **Content**: Comercial como el de Van Damm pero Transmilenio para Peñalosa
+- **Content**: Remake del comercial de Van Damme + Volvo (el split épico) pero con Peñalosa haciendo el split entre dos Transmilenios. Video/animación satírica.
 
 ### [2025-12-09 07:24] cap-020
 - **Type**: assertion
-- **Content**: Más de 50 ministerios, 120 malandros, 120 mañas, 900 posibles chancucos. Más de 6800 billones en chancucos, tajadas y favores
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-12-09 07:35] cap-021
-- **Type**: concept
-- **Content**: Agencia de contratación a dedo
+- **Type**: idea
+- **Content**: Agencia de contratación a dedo — idea para República Malandra
 
 ### [2026-01-02 21:49] cap-022
-- **Type**: concept
-- **Content**: Violación de topes electorales
+- **Type**: idea
+- **Content**: Camuflaje de topes electorales — esconder aportes a tu campaña en vuelos sin factura, eventos regalados, eventos en horarios no laborales. Triquiñuelas para esconder plata de aportes. Idea para República Malandra.
 
 ### [2026-01-02 21:49] cap-023
-- **Type**: concept
-- **Content**: Sobornar congresistas para pasar reformas
+- **Type**: idea
+- **Content**: Sobornar congresistas para pasar reformas — idea para República Malandra
 
 ### [2026-01-02 23:15] cap-024
-- **Type**: concept
-- **Content**: Usar tibios como engañabobos
+- **Type**: idea
+- **Content**: Usar tibios como engañabobos — idea para República Malandra
 
 ### [2026-01-10 09:19] cap-025
-- **Type**: concept
-- **Content**: En las corbatas agregar que son manejadas por alguien dando énfasis en contratación y no en alcance técnico
+- **Type**: idea
+- **Content**: En las corbatas agregar que son manejadas por alguien dando énfasis en contratación y no en alcance técnico — idea para República Malandra
 
 ### [2026-01-10 13:14] cap-026
 - **Type**: concept
-- **Content**: Malandros, poderes, mañas (estructura general)
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-10 14:22] cap-027
-- **Type**: concept
-- **Content**: Cantantes prepago
+- **Type**: idea
+- **Content**: Cantantes prepago — idea para República Malandra
 
 ### [2026-01-22 09:40] cap-028
-- **Type**: concept
-- **Content**: "Debes acostumbrar a la gente. Vivir con la disonancia cognitiva, y la incoherencia es un gran valor porque te permite decir una cosa y hacer otra..."
+- **Type**: idea
+- **Content**: "Debes acostumbrar a la gente a vivir con la disonancia cognitiva. La incoherencia es un gran valor porque te permite decir una cosa y hacer otra..." — idea para República Malandra
 
 ### [2026-01-26 13:26] cap-029
-- **Type**: concept
-- **Content**: Ceder activos en el exterior a precio de huevo
+- **Type**: idea
+- **Content**: Ceder activos en el exterior a precio de huevo — idea para República Malandra
 
 ### [2026-01-09 09:51] cap-030
-- **Type**: task
-- **Content**: Hoja de vida de Petro
-- **Status**: open
+- **Type**: idea
+- **Content**: Hoja de vida de Petro — idea para artículo de Vecino
 
 ### [2026-01-09 10:27] cap-031
-- **Type**: concept
-- **Content**: Narcotización de la economía
+- **Type**: idea
+- **Content**: Narcotización de la economía — idea para República Malandra
 
 ### [2025-05-07 05:31] cap-032
 - **Type**: concept
-- **Content**: Términos para referirse a los opositores
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-05-20 17:02] cap-033
 - **Type**: idea
-- **Content**: Kit marcha Petro (lechona? jugo?)
+- **Content**: Kit marcha Petro (lechona? jugo?) — idea para República Malandra
 
 ### [2025-04-17 19:17] cap-034
-- **Type**: concept
-- **Content**: Ojos que ven masacres
+- **Type**: idea
+- **Content**: Ojos que ven masacres — idea para República Malandra
 
 ### [2025-06-03 08:10] cap-035
-- **Type**: concept
-- **Content**: Berto Bandido: cuántos pases te has metido
+- **Type**: idea
+- **Content**: Berto Bandido: cuántos pases te has metido — idea para República Malandra
 
 ### [2025-06-14 19:01] cap-036
+- **Type**: idea
+- **Content**: Vendedor de periódico gritando "¡Extra! ¡Extra!" con una verdad — visual para República Malandra
+
+### [2026-02-22 11:40] cap-216
+- **Type**: task
+- **Content**: Scrapear video "Petro no quiere pobres, Petro nos quiere obedientes" (Antonini de Jiménez) — extraer premisas, máximas y creencias. URL: https://youtu.be/EEGz3ZcW2ck. Transcripción ya descargada en /tmp/ytvideo.es.vtt
+- **Status**: open
+
+### [2026-02-22 11:30] cap-214
 - **Type**: concept
-- **Content**: Un man gritando una verdad (visual)
+- **Content**: Maña: Mentalidad de subsidio — acostumbrar a la gente a que todo sea regalado con la plata de los demás, para exterminar agencia personal y subordinar voluntades.
 
 ### [2025-05-14 07:30] cap-037
-- **Type**: assertion
-- **Content**: La Malandra: uno de los indicadores es patrimonio personal y otro es deuda pública
+- **Type**: idea
+- **Content**: En la sección de economía de Vecino aparecen indicadores: patrimonio personal de funcionarios y deuda pública. Métricas clave para tracking.

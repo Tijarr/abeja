@@ -7,5 +7,5 @@
 
 ### [2025-09-06 18:31] cap-009
 - **Type**: assertion
-- **Content**: El becerro de la 40
-- **Confidence**: medium (referencia sin contexto completo)
+- **Content**: [ELIMINADA]
+- **Status**: done

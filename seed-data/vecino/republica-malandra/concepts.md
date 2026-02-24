@@ -2,40 +2,43 @@
 
 ### [2025-04-21 06:40] cap-046
 - **Type**: concept
-- **Content**: Hay cartas que solo se ganan cumpliendo misiones
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-04-24 07:22] cap-047
-- **Type**: concept
-- **Content**: Maña revela las coordenadas
+- **Type**: idea
+- **Content**: Maña revela las coordenadas — idea para República Malandra
 
 ### [2025-04-24 07:24] cap-048
 - **Type**: concept
-- **Content**: Las mañas que se juegan en la casa del buitre afectan todo el tablero, con las del gameplay
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-12-23 11:25] cap-049
-- **Type**: concept
-- **Content**: Burocracia, notarías (mecánica de juego)
+- **Type**: idea
+- **Content**: Burocracia, notarías (mecánica de juego) — idea para República Malandra
 
 ### [2025-12-23 11:42] cap-050
-- **Type**: concept
-- **Content**: Eventos que pasan en el juego: los niveles de violencia. Te robaron.
+- **Type**: idea
+- **Content**: Eventos que pasan en el juego: los niveles de violencia. Te robaron. — idea para República Malandra
 
 ### [2025-12-23 11:47] cap-051
-- **Type**: concept
-- **Content**: Evento (burocracia): tienes que acercarte a la notaría y hacer el trámite para continuar jugando
+- **Type**: idea
+- **Content**: Evento (burocracia): tienes que acercarte a la notaría y hacer el trámite para continuar jugando — idea para República Malandra
 
 ### [2025-05-12 09:11] cap-052
-- **Type**: concept
-- **Content**: Bulgarcito (personaje/término)
+- **Type**: idea
+- **Content**: Bulgarcito (personaje/término) — idea para República Malandra
 
 ### [2025-05-13 12:54] cap-053
-- **Type**: concept
-- **Content**: Globalinski (personaje/término)
+- **Type**: idea
+- **Content**: Globalinski (personaje/término) — idea para República Malandra
 
 ### [2025-04-20 08:01] cap-054
-- **Type**: concept
-- **Content**: Noticias de República Malandra se obtienen de scraper de medios que satiriza la noticia
+- **Type**: idea
+- **Content**: Noticias de República Malandra se obtienen de scraper de medios que satiriza la noticia — idea para República Malandra
 
 ### [2025-04-20 08:03] cap-055
 - **Type**: concept
-- **Content**: Últimas noticias de la República Malandra y del mundo
+- **Content**: [ELIMINADA]
+- **Status**: done

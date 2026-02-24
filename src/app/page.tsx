@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { TYPE_CONFIG, DOMAIN_EMOJI } from '@/lib/types'
+import { TYPE_CONFIG, DOMAIN_CONFIG } from '@/lib/types'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -11,6 +11,7 @@ export default async function Dashboard() {
   })
 
   const totalCaptures = domains.reduce((acc, d) => acc + d.spaces.reduce((a, s) => a + s.captures.length, 0), 0)
+  const openTasks = domains.reduce((acc, d) => acc + d.spaces.reduce((a, s) => a + s.captures.filter(c => c.type === 'task' && c.status === 'open').length, 0), 0)
   
   const typeCounts: Record<string, number> = {}
   domains.forEach(d => d.spaces.forEach(s => s.captures.forEach(c => {
@@ -18,83 +19,126 @@ export default async function Dashboard() {
   })))
 
   const recentCaptures = await prisma.capture.findMany({
-    take: 10,
+    take: 15,
     orderBy: { createdAt: 'desc' },
     include: { space: { include: { domain: true } } },
   })
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-1" style={{ color: '#f5c518' }}>🐝 Abeja</h1>
-      <p className="text-[#888] mb-8 text-sm">Sistema de captura y contexto — Angel Tijaro</p>
+    <div className="max-w-5xl mx-auto px-6 py-10">
+      {/* Header */}
+      <div className="mb-10">
+        <h1 className="text-[22px] font-semibold tracking-tight mb-1">Abeja</h1>
+        <p className="text-[13px]" style={{ color: 'var(--text-tertiary)' }}>Context designer</p>
+      </div>
 
-      {/* Stats */}
-      <div className="flex gap-3 flex-wrap mb-8">
-        <Stat num={totalCaptures} label="Total" />
-        {Object.entries(typeCounts).sort((a,b) => b[1]-a[1]).map(([type, count]) => (
-          <Stat key={type} num={count} label={type} emoji={TYPE_CONFIG[type]?.emoji} />
+      {/* Stats row */}
+      <div className="flex gap-6 mb-10 pb-8" style={{ borderBottom: '1px solid var(--border)' }}>
+        <StatBlock num={totalCaptures} label="Captures" />
+        <StatBlock num={openTasks} label="Open tasks" accent />
+        <StatBlock num={domains.length} label="Domains" />
+        {Object.entries(typeCounts).sort((a,b) => b[1]-a[1]).slice(0, 4).map(([type, count]) => (
+          <StatBlock key={type} num={count} label={TYPE_CONFIG[type]?.label || type} />
         ))}
       </div>
 
-      {/* Domains */}
-      <div className="grid gap-4 mb-10">
-        {domains.map(domain => {
-          const count = domain.spaces.reduce((a, s) => a + s.captures.length, 0)
-          if (count === 0) return null
-          return (
-            <Link key={domain.id} href={`/domain/${domain.slug}`}
-              className="bg-[#111] border border-[#222] rounded-xl p-5 hover:border-[#444] transition">
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-semibold">
-                  {DOMAIN_EMOJI[domain.slug] || '📁'} {domain.name}
-                  {domain.vault && ' 🔒'}
-                </h2>
-                <span className="text-sm px-3 py-1 rounded-full" style={{ background: '#222', color: '#f5c518' }}>
-                  {count}
+      {/* Domains grid */}
+      <div className="mb-10">
+        <h2 className="text-[13px] font-medium uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
+          Domains
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          {domains.map(domain => {
+            const count = domain.spaces.reduce((a, s) => a + s.captures.length, 0)
+            if (count === 0) return null
+            const config = DOMAIN_CONFIG[domain.slug]
+            const openCount = domain.spaces.reduce((a, s) => a + s.captures.filter(c => c.status === 'open').length, 0)
+            return (
+              <Link key={domain.id} href={`/domain/${domain.slug}`}
+                className="group flex items-center gap-4 rounded-lg px-4 py-3 transition-colors hover:brightness-125"
+                style={{ background: 'var(--surface)' }}
+              >
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: config?.color || '#666' }} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[14px] font-medium">{domain.name}</span>
+                    {domain.vault && <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Private</span>}
+                  </div>
+                  <div className="text-[12px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+                    {domain.spaces.map(s => s.name).join(' · ')}
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{count}</span>
+                  {openCount > 0 && (
+                    <div className="text-[11px]" style={{ color: 'var(--accent)' }}>{openCount} open</div>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Recent activity */}
+      <div>
+        <h2 className="text-[13px] font-medium uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
+          Recent activity
+        </h2>
+        <div className="space-y-px">
+          {recentCaptures.map(c => {
+            const tc = TYPE_CONFIG[c.type]
+            const dc = DOMAIN_CONFIG[c.space.domain.slug]
+            return (
+              <div key={c.id} className="flex items-start gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-[var(--surface)]">
+                <span className="text-[14px] mt-0.5 shrink-0 w-4 text-center font-mono" style={{ color: tc?.color || '#666' }}>
+                  {tc?.icon || '·'}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] leading-relaxed" style={{ color: c.status === 'done' ? 'var(--text-tertiary)' : 'var(--text)' }}>
+                    {c.title || c.body}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ background: tc?.bg, color: tc?.color }}>
+                      {tc?.label || c.type}
+                    </span>
+                    <span className="text-[11px]" style={{ color: dc?.color || '#666' }}>
+                      {c.space.domain.name}
+                    </span>
+                    <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                      {c.space.name}
+                    </span>
+                    {c.status === 'open' && (
+                      <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ background: '#1f2a1a', color: '#6bc9a0' }}>
+                        open
+                      </span>
+                    )}
+                    {c.deadline && (
+                      <span className="text-[11px]" style={{ color: '#e8ab5e' }}>
+                        {new Date(c.deadline).toLocaleDateString('es-CO')}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <span className="text-[11px] shrink-0 mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                  {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
                 </span>
               </div>
-              <div className="flex gap-2 mt-2">
-                {domain.spaces.map(s => (
-                  <span key={s.id} className="text-xs text-[#666]">
-                    {s.name} ({s.captures.length})
-                  </span>
-                ))}
-              </div>
-            </Link>
-          )
-        })}
-      </div>
-
-      {/* Recent */}
-      <h2 className="text-lg font-semibold mb-4">Recientes</h2>
-      <div className="space-y-2">
-        {recentCaptures.map(c => (
-          <div key={c.id} className="bg-[#111] border border-[#222] rounded-lg px-4 py-3 flex items-start gap-3">
-            <span className="text-lg">{TYPE_CONFIG[c.type]?.emoji || '📝'}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm truncate">{c.content}</p>
-              <p className="text-xs text-[#666] mt-1">
-                {DOMAIN_EMOJI[c.space.domain.slug]} {c.space.domain.name} / {c.space.name}
-                <span className="ml-2">{c.createdAt.toLocaleDateString('es-CO')}</span>
-              </p>
-            </div>
-            {c.status && (
-              <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1a3a1a', color: '#4caf50' }}>
-                {c.status}
-              </span>
-            )}
-          </div>
-        ))}
+            )
+          })}
+        </div>
       </div>
     </div>
   )
 }
 
-function Stat({ num, label, emoji }: { num: number; label: string; emoji?: string }) {
+function StatBlock({ num, label, accent }: { num: number; label: string; accent?: boolean }) {
   return (
-    <div className="bg-[#111] border border-[#222] rounded-lg px-4 py-3">
-      <div className="text-2xl font-bold" style={{ color: '#f5c518' }}>{num}</div>
-      <div className="text-xs text-[#888] uppercase">{emoji} {label}</div>
+    <div>
+      <div className="text-[24px] font-semibold tracking-tight" style={{ color: accent ? 'var(--accent)' : 'var(--text)' }}>
+        {num}
+      </div>
+      <div className="text-[11px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>{label}</div>
     </div>
   )
 }

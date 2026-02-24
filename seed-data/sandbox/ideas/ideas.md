@@ -1,5 +1,10 @@
 # Ideas — Sandbox
 
+### [2026-02-22 11:47] cap-217
+- **Type**: idea
+- **Content**: yoideo.com — plataforma donde la gente publica ideas de features/APIs que quiere que empresas implementen (ej: Avianca debería tener API/CLI para comprar vuelos desde un chat/agente IA). Las ideas se votan, generan ruido, y las empresas ven qué quiere la gente. "Un lugar donde las ideas puedan existir y ser votadas."
+- **Status**: open
+
 ### [2025-09-18 14:38] cap-123
 - **Type**: idea
 - **Content**: Un sitio de gangas para el hogar (calendario de promos)
@@ -14,85 +19,99 @@
 
 ### [2025-12-10 21:27] cap-126
 - **Type**: idea
-- **Content**: Transestrato (⚠️ recurrente: aparece 2 veces)
+- **Content**: Transestrato — persona que se baja de estrato para acceder a subsidios. Ángulo editorial: compararlos con los Terran. Idea para República Malandra.
 
 ### [2026-01-23 21:10] cap-127
 - **Type**: idea
-- **Content**: Aplicación que le muestre a uno qué estuvo inspirado, por qué y cómo
+- **Content**: App de ingeniería inversa de la inspiración. Ej: Steve Jobs → inspirado por la música de X → que inspiró el diseño de Y → que a su vez inspiró Z. Cadena de inspiración documentada. Concepto: "Steal Like an Artist" pero mapeado.
 
 ### [2026-01-26 11:10] cap-128
 - **Type**: idea
-- **Content**: Un detector de veracidad de afirmaciones en videos de YouTube, scrapeando los textos y luego corroborando
+- **Content**: [ELIMINADA — evolucionó a cap-216: extracción de afirmaciones/premisas de videos YT como insumo editorial]
+- **Status**: done
 
 ### [2026-01-26 13:54] cap-129
 - **Type**: idea
-- **Content**: Encuestadora de bolsillo
+- **Content**: Encuestadora de bolsillo — idea para República Malandra
 
 ### [2025-09-04 14:44] cap-130
 - **Type**: idea
-- **Content**: Una plataforma de participación ciudadana tipo MiMedellín pero enfocado a PQRSD
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-24 13:58] cap-131
 - **Type**: idea
-- **Content**: Bloqueo de plataformas digitales
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-24 14:01] cap-132
 - **Type**: idea
-- **Content**: Agencia de bolsillo: tú "cuidas" y "supervisas" con mi aval
+- **Content**: Agencia de bolsillo: tú "cuidas" y "supervisas" con mi aval — idea para República Malandra
 
 ### [2026-01-18 19:06] cap-133
 - **Type**: idea
-- **Content**: Banco tus impuestos
+- **Content**: "Banco: tus impuestos" — el banco de los malandros son nuestros impuestos. Idea para República Malandra.
 
 ### [2026-01-10 12:01] cap-134
 - **Type**: idea
-- **Content**: Proyecto suscripciones: tareas relacionadas con revisar suscripciones en un punto específico
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-02 20:51] cap-135
 - **Type**: reference
-- **Content**: Kettle weight (investigar)
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-10-29 21:15] cap-136
 - **Type**: idea
-- **Content**: Río JEP te bautiza y te quita todos los pecados (¿Vecino?)
+- **Content**: Río JEP te bautiza y te quita todos los pecados — idea para República Malandra
 
 ### [2025-12-27 16:26] cap-137
 - **Type**: idea
-- **Content**: Crowli — cultura del apocalipsis
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-04-22 07:06] cap-138
 - **Type**: idea
-- **Content**: Cero desperdicio — cajas de suscripción
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-04-27 13:46] cap-139
 - **Type**: idea
-- **Content**: Agencia de viajes cripto
+- **Content**: Agencia de viajes cripto — idea para República Malandra
+
+### [2026-02-22 13:05] cap-235
+- **Type**: idea
+- **Content**: La moneda de República Malandra son los Brincoins — idea para República Malandra
 
 ### [2025-04-27 13:51] cap-140
 - **Type**: idea
-- **Content**: Resguardos ancestrales (investigar)
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-04-20 22:04] cap-141
-- **Type**: task
-- **Content**: Sandalias mamacita / Estropajo (x2)
-- **Status**: open
+- **Type**: idea
+- **Content**: [ELIMINADA — pero el interés real es explorar venta de producto físico vía ecommerce]
+- **Status**: done
 
 ### [2025-04-21 06:32] cap-142
-- **Type**: reference
-- **Content**: Nicolás Snow (investigar)
+- **Type**: idea
+- **Content**: Nicolás Snow — idea para República Malandra
 
 ### [2025-04-20 10:11] cap-143
 - **Type**: task
-- **Content**: Beneficiario de Panamá y acciones
-- **Status**: open
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2025-05-13 15:46] cap-144
 - **Type**: reference
-- **Content**: Show mediático tasa de interés China
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-02-10 06:57] cap-145
 - **Type**: concept
-- **Content**: Para la plataforma de valores: uno de mis valores clave es la eficiencia (revisar The One Thing)
+- **Content**: [MOVIDA a Personal/Máximas como principio general]
+- **Status**: done
 
 ### [2026-02-10 09:20] cap-146
 - **Type**: reflection
@@ -112,7 +131,8 @@
 
 ### [2025-06-29 10:46] cap-150
 - **Type**: idea
-- **Content**: Sitio de contenido compatible con hoodie. Idea: dormir.
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-02-22 10:50] cap-208
 - **Type**: idea
@@ -120,4 +140,5 @@
 
 ### [2025-01-04 09:50] cap-151
 - **Type**: idea
-- **Content**: ¿Cuánta gente programa noticias? / Que toda la información vaya hacia nosotros
+- **Content**: [ELIMINADA]
+- **Status**: done

@@ -2,19 +2,29 @@
 
 :root {
   --bg: #0a0a0a;
-  --surface: #111111;
-  --border: #222222;
-  --text: #e0e0e0;
-  --muted: #888888;
-  --accent: #f5c518;
+  --surface: #131316;
+  --surface-hover: #1a1a1f;
+  --border: #1e1e24;
+  --border-hover: #2e2e36;
+  --text: #e8e8ed;
+  --text-secondary: #7e7e8c;
+  --text-tertiary: #4e4e56;
+  --accent: #e8ab5e;
 }
 
 body {
   background: var(--bg);
   color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #333 #0a0a0a;
+  scrollbar-color: #222 #0a0a0a;
+}
+
+::selection {
+  background: rgba(232, 171, 94, 0.2);
 }

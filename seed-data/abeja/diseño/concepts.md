@@ -88,6 +88,51 @@
 - **Type**: concept
 - **Content**: Contexto se construye a partir de assertions (factos atómicos). Knowledge graph basado en assertions. Los docs pueden generarse DESDE assertions, no al revés. Contradicciones detectables.
 
+### [2026-02-22 12:55] cap-230
+- **Type**: reflection
+- **Content**: "No quiero repetir más." Angel se cansó de repetir las mismas cosas a personas. Con IA no tiene ese problema. Le va bien con gente con la que no tiene que repetir tanto. Insight clave para diseño de Abeja: el sistema debe aprender y no preguntar dos veces lo mismo.
+
+### [2026-02-22 12:55] cap-231
+- **Type**: task
+- **Content**: Reunión Lunes 8am — revisar documento (Angel lo pasa). Preparar para la reunión.
+- **Status**: open
+- **Deadline**: 2026-02-24
+
+### [2026-02-22 12:55] cap-232
+- **Type**: task
+- **Content**: Conseguir acceso al calendario de Angel para ayudar a organizar reuniones.
+- **Status**: open
+
+### [2026-02-22 12:55] cap-233
+- **Type**: idea
+- **Content**: Para reunión con abogado tributarista: proponerle un agente/contador automatizado que lleva contabilidad con reglas de ahorro tributario incluidas. "Te vendo el contador automatizado." Conecta con cap-212 (estrategia tributaria) y cap-213 (sistema de egresos).
+- **Status**: open
+
+### [2026-02-22 12:50] cap-228
+- **Type**: idea
+- **Content**: Onboarding como sesión de conocimiento: un chat donde Abeja va conociendo al dueño del segundo cerebro, le pregunta, lo entiende. No es un formulario — es una conversación que construye el contexto inicial (creencias, dominios, reglas, qué le importa). Clave para que el sistema arranque con sentido.
+- **Status**: open
+
+### [2026-02-22 12:50] cap-229
+- **Type**: idea
+- **Content**: 6 tipos de captura refinados: Creencia (por qué → criterio de decisión), Regla (cómo → lógica de ejecución), Idea (qué podría ser → backlog), Task (qué hacer → cola), Reflexión (qué se pensó → contexto), Referencia (dónde está → puntero a otro sistema).
+- **Status**: open
+
+### [2026-02-22 12:35] cap-227
+- **Type**: idea
+- **Content**: Sistema de etiquetas locales por space dentro de cada dominio. Permite clasificar y filtrar capturas dentro de un espacio. Potencialmente búsqueda transversal después.
+- **Status**: open
+
+### [2026-02-22 12:15] cap-225
+- **Type**: idea
+- **Content**: UX por tipo de captura: tasks se ven como lista (modo productividad), ideas se ven como post-its. Cuando arrastras una idea encima de otra, se fusionan usando un LLM — combina conceptos automáticamente.
+- **Status**: open
+
+### [2026-02-22 11:33] cap-215
+- **Type**: task
+- **Content**: Pendiente: definir tipos de captura con atributos específicos (ej: mañas tienen nombre, mecánica, objetivo, consecuencia, ejemplo, nivel de cinismo). Cada tipo de objeto podría tener su propia estructura de metadata.
+- **Status**: open
+
 ### [2026-02-22 09:09] cap-174
 - **Type**: assertion
 - **Content**: La ironía: necesitas Abeja para poder construir Abeja. Sin sistema de captura, las ideas secuestran porque si no las persigues se pierden.

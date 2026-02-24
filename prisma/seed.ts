@@ -6,11 +6,28 @@ const prisma = new PrismaClient()
 
 const SEED_DIR = path.join(__dirname, '..', 'seed-data')
 
+const TYPE_MAPPING: Record<string, string> = {
+  'task': 'task',
+  'idea': 'idea',
+  'assertion': 'creencia',
+  'concept': 'idea',
+  'reflection': 'reflexion',
+  'reference': 'referencia',
+  'routine': 'regla',
+  'creencia': 'creencia',
+  'regla': 'regla',
+  'reflexion': 'reflexion',
+  'referencia': 'referencia'
+}
+
 interface ParsedCapture {
   capRef: string
   date: string
   type: string
-  content: string
+  body: string
+  title?: string
+  tags?: string[]
+  sourceUrl?: string
   status?: string
   confidence?: string
   deadline?: string
@@ -18,20 +35,19 @@ interface ParsedCapture {
 }
 
 function parseMdFile(filePath: string): ParsedCapture[] {
-  const content = fs.readFileSync(filePath, 'utf8')
-  const entries = content.split(/^### /m).slice(1)
+  const fileContent = fs.readFileSync(filePath, 'utf8')
+  const entries = fileContent.split(/^### /m).slice(1)
   const captures: ParsedCapture[] = []
 
   for (const entry of entries) {
     const lines = entry.trim().split('\n')
     const header = lines[0] || ''
     const dateMatch = header.match(/\[(\d{4}-\d{2}-\d{2}\s[\d:]+)\]\s*(cap-\d+)/)
-    
-    const cap: ParsedCapture = {
+
+    const cap: Partial<ParsedCapture> & { capRef: string; date: string; type: string } = {
       capRef: dateMatch?.[2] || '',
       date: dateMatch?.[1] || '2025-01-01 00:00',
       type: 'idea',
-      content: '',
     }
 
     for (const line of lines.slice(1)) {
@@ -39,8 +55,9 @@ function parseMdFile(filePath: string): ParsedCapture[] {
       if (m) {
         const key = m[1].toLowerCase()
         const val = m[2].trim()
-        if (key === 'type') cap.type = val
-        else if (key === 'content') cap.content = val
+        if (key === 'type') cap.type = TYPE_MAPPING[val] || val
+        else if (key === 'content' || key === 'body') cap.body = val
+        else if (key === 'title') cap.title = val
         else if (key === 'status') cap.status = val
         else if (key === 'confidence') cap.confidence = val
         else if (key === 'deadline') cap.deadline = val
@@ -48,7 +65,10 @@ function parseMdFile(filePath: string): ParsedCapture[] {
       }
     }
 
-    if (cap.content && cap.capRef) captures.push(cap)
+    if (cap.body && cap.capRef) {
+      if (!cap.title) cap.title = cap.body.substring(0, 80)
+      captures.push(cap as ParsedCapture)
+    }
   }
 
   return captures
@@ -64,9 +84,8 @@ async function main() {
   await prisma.space.deleteMany()
   await prisma.domain.deleteMany()
 
-  // Load domains.json
   const domainsConfig = JSON.parse(fs.readFileSync(path.join(SEED_DIR, 'domains.json'), 'utf8'))
-  
+
   let order = 0
   for (const [slug, config] of Object.entries(domainsConfig) as [string, any][]) {
     const domain = await prisma.domain.create({
@@ -80,49 +99,54 @@ async function main() {
     }
   }
 
-  // Parse all .md files in captures/
-  const capturesDir = path.join(SEED_DIR, 'captures') 
-  if (!fs.existsSync(capturesDir)) {
-    // Captures are directly in seed-data/{domain}/{space}/
-    for (const [domainSlug] of Object.entries(domainsConfig)) {
-      const domainDir = path.join(SEED_DIR, domainSlug)
-      if (!fs.existsSync(domainDir)) continue
+  // Parse captures from seed-data/{domain}/{space}/*.md
+  for (const [domainSlug] of Object.entries(domainsConfig)) {
+    const domainDir = path.join(SEED_DIR, domainSlug)
+    if (!fs.existsSync(domainDir)) continue
 
-      const domain = await prisma.domain.findUnique({ where: { slug: domainSlug } })
-      if (!domain) continue
+    const domain = await prisma.domain.findUnique({ where: { slug: domainSlug } })
+    if (!domain) continue
 
-      for (const spaceSlug of fs.readdirSync(domainDir)) {
-        const spaceDir = path.join(domainDir, spaceSlug)
-        if (!fs.statSync(spaceDir).isDirectory()) continue
+    for (const spaceSlug of fs.readdirSync(domainDir)) {
+      const spaceDir = path.join(domainDir, spaceSlug)
+      if (!fs.existsSync(spaceDir) || !fs.statSync(spaceDir).isDirectory()) continue
 
-        const space = await prisma.space.findFirst({ 
-          where: { domainId: domain.id, slug: spaceSlug } 
-        })
-        if (!space) continue
+      const space = await prisma.space.findFirst({
+        where: { domainId: domain.id, slug: spaceSlug }
+      })
+      if (!space) continue
 
-        for (const file of fs.readdirSync(spaceDir)) {
-          if (!file.endsWith('.md')) continue
-          const captures = parseMdFile(path.join(spaceDir, file))
-          
-          for (const cap of captures) {
-            try {
-              await prisma.capture.create({
-                data: {
-                  spaceId: space.id,
-                  type: cap.type.toUpperCase() === cap.type ? cap.type.toLowerCase() : cap.type,
-                  content: cap.content,
-                  capRef: cap.capRef,
-                  status: cap.status || null,
-                  confidence: cap.confidence || null,
-                  deadline: cap.deadline ? new Date(cap.deadline) : null,
-                  frequency: cap.frequency || null,
-                  source: 'seed',
-                  createdAt: new Date(cap.date),
-                }
-              })
-            } catch (e) {
-              console.log(`  Skip ${cap.capRef}: ${e}`)
-            }
+      for (const file of fs.readdirSync(spaceDir)) {
+        if (!file.endsWith('.md')) continue
+        const captures = parseMdFile(path.join(spaceDir, file))
+
+        for (const cap of captures) {
+          try {
+            await prisma.capture.upsert({
+              where: { capRef: cap.capRef },
+              create: {
+                spaceId: space.id,
+                type: cap.type,
+                title: cap.title || cap.body.substring(0, 80),
+                body: cap.body,
+                tags: cap.tags || [],
+                capRef: cap.capRef,
+                status: cap.status || null,
+                confidence: cap.confidence || null,
+                deadline: cap.deadline ? new Date(cap.deadline) : null,
+                frequency: cap.frequency || null,
+                source: 'seed',
+                createdAt: new Date(cap.date),
+              },
+              update: {
+                title: cap.title || cap.body.substring(0, 80),
+                body: cap.body,
+                type: cap.type,
+                status: cap.status || null,
+              }
+            })
+          } catch (e) {
+            console.log(`  Skip ${cap.capRef}: ${e}`)
           }
         }
       }

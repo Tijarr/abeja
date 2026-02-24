@@ -2,14 +2,14 @@
 
 ### [2025-12-23 10:52] cap-101
 - **Type**: task
-- **Content**: Regalos Navidad: Santi: Exploding Kitten, Mila: sombrero, Ariana: bono H&M, Gael: Minifig de Lego, Bono: bono de H&M. María Paula: bono de librería, Pablo: librería francesa. Notaría.
-- **Status**: open
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-11 15:42] cap-102
 - **Type**: task
-- **Content**: Regalo Gael
-- **Status**: open
+- **Content**: [ELIMINADA]
+- **Status**: done
 
 ### [2026-01-06 21:46] cap-103
 - **Type**: idea
-- **Content**: Skills: explicarle a mis hijos, explicarle a mis ex, extraer mensajes de un grupo de WhatsApp
+- **Content**: Contenidos multimedia personalizados a la medida: cómo desarrollar contenido que me ayude a explicarle algo específico a una persona específica (ej: a mi ex, a mis hijos). Dependiendo de qué quiero transmitir y a quién, generar el formato adecuado. Extensible a cualquier persona/relación.

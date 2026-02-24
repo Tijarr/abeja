@@ -1,5 +1,15 @@
 # Assertions — Personal / Máximas
 
+### [2026-02-22 12:05] cap-223
+- **Type**: assertion
+- **Content**: Con el estado del arte de la tecnología, ya no es loco pensar en desplegar muchos proyectos a la vez. El cuello de botella ya no es ejecución sino contexto.
+- **Confidence**: high
+
+### [2026-02-22 12:05] cap-224
+- **Type**: assertion
+- **Content**: Todo lo que hacemos siempre busca generar valor a quien lo usa. Siempre.
+- **Confidence**: high (principio fundacional)
+
 ### [2025-07-30 15:55] cap-075
 - **Type**: assertion
 - **Content**: Propósito: experimentar de forma que siga aprendiendo
@@ -68,6 +78,11 @@
 ### [2025-12-27 09:27] cap-088
 - **Type**: assertion
 - **Content**: Misión: simplificar/facilitar la vida a la gente
+- **Confidence**: core
+
+### [2026-02-22 13:10] cap-236
+- **Type**: assertion
+- **Content**: Principio The One Thing: ¿qué puedo hacer ahora que haga que las cosas que tenga que hacer en el futuro se faciliten o se vuelvan innecesarias? Efecto dominó. Eficiencia como valor clave.
 - **Confidence**: core
 
 ### [2025-08-28 13:44] cap-089

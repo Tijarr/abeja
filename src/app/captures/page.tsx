@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { TYPE_CONFIG, DOMAIN_EMOJI } from '@/lib/types'
+import { TYPE_CONFIG, DOMAIN_CONFIG } from '@/lib/types'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -10,7 +10,7 @@ export default async function CapturesPage({ searchParams }: { searchParams: Pro
   const where: Record<string, unknown> = {}
   if (sp.type) where.type = sp.type
   if (sp.domain) where.space = { domain: { slug: sp.domain } }
-  if (sp.q) where.content = { contains: sp.q }
+  if (sp.q) where.OR = [{ body: { contains: sp.q, mode: 'insensitive' } }, { title: { contains: sp.q, mode: 'insensitive' } }]
 
   const captures = await prisma.capture.findMany({
     where,
@@ -22,49 +22,65 @@ export default async function CapturesPage({ searchParams }: { searchParams: Pro
   const domains = await prisma.domain.findMany({ orderBy: { sortOrder: 'asc' } })
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      <Link href="/" className="text-[#888] hover:text-[#f5c518] text-sm mb-4 inline-block">← Volver</Link>
-      <h1 className="text-2xl font-bold mb-6" style={{ color: '#f5c518' }}>Capturas ({captures.length})</h1>
+    <div className="max-w-5xl mx-auto px-6 py-10">
+      <Link href="/" className="text-[13px] mb-6 inline-flex items-center gap-1 transition-colors"
+        style={{ color: 'var(--text-tertiary)' }}>← Back</Link>
+      
+      <h1 className="text-[22px] font-semibold tracking-tight mb-6">Captures <span style={{ color: 'var(--text-tertiary)' }}>({captures.length})</span></h1>
 
       {/* Filters */}
-      <form className="flex gap-3 flex-wrap mb-6">
-        <input name="q" defaultValue={sp.q || ''} placeholder="Buscar..."
-          className="bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#f5c518]" />
+      <form className="flex gap-3 flex-wrap mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+        <input name="q" defaultValue={sp.q || ''} placeholder="Search..."
+          className="px-3 py-2 rounded-lg text-[13px] outline-none"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }} />
         <select name="type" defaultValue={sp.type || ''}
-          className="bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-sm text-white">
-          <option value="">Todos los tipos</option>
-          {Object.keys(TYPE_CONFIG).map(t => <option key={t} value={t}>{TYPE_CONFIG[t].emoji} {t}</option>)}
+          className="px-3 py-2 rounded-lg text-[13px]"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+          <option value="">All types</option>
+          {Object.entries(TYPE_CONFIG).map(([t, cfg]) => <option key={t} value={t}>{cfg.icon} {cfg.label}</option>)}
         </select>
         <select name="domain" defaultValue={sp.domain || ''}
-          className="bg-[#111] border border-[#333] rounded-lg px-3 py-2 text-sm text-white">
-          <option value="">Todos los domains</option>
-          {domains.map(d => <option key={d.slug} value={d.slug}>{DOMAIN_EMOJI[d.slug]} {d.name}</option>)}
+          className="px-3 py-2 rounded-lg text-[13px]"
+          style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
+          <option value="">All domains</option>
+          {domains.map(d => <option key={d.slug} value={d.slug}>{d.name}</option>)}
         </select>
-        <button type="submit" className="bg-[#f5c518] text-black text-sm font-semibold px-4 py-2 rounded-lg hover:bg-[#e0b015]">
-          Filtrar
+        <button type="submit" className="px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-90"
+          style={{ background: 'var(--text)', color: 'var(--bg)' }}>
+          Filter
         </button>
       </form>
 
       {/* List */}
-      <div className="space-y-2">
-        {captures.map(c => (
-          <div key={c.id} className="bg-[#111] border border-[#222] rounded-lg px-4 py-3 flex items-start gap-3">
-            <span className="text-lg shrink-0">{TYPE_CONFIG[c.type]?.emoji || '📝'}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm">{c.content}</p>
-              <div className="flex gap-2 mt-1 flex-wrap">
-                <span className="text-xs px-2 py-0.5 rounded" style={{ background: TYPE_CONFIG[c.type]?.bg, color: TYPE_CONFIG[c.type]?.color }}>
-                  {c.type}
-                </span>
-                <span className="text-xs text-[#666]">
-                  {DOMAIN_EMOJI[c.space.domain.slug]} {c.space.domain.name}/{c.space.name}
-                </span>
-                {c.status && <span className="text-xs px-2 py-0.5 rounded" style={{ background: '#1a3a1a', color: '#4caf50' }}>{c.status}</span>}
-                <span className="text-xs text-[#666]">{c.createdAt.toLocaleDateString('es-CO')}</span>
+      <div className="space-y-px">
+        {captures.map(c => {
+          const tc = TYPE_CONFIG[c.type]
+          const dc = DOMAIN_CONFIG[c.space.domain.slug]
+          return (
+            <div key={c.id} className="flex items-start gap-3 px-4 py-3 rounded-lg transition-colors hover:bg-[var(--surface)]">
+              <span className="text-[14px] mt-0.5 shrink-0 w-4 text-center font-mono" style={{ color: tc?.color || '#666' }}>
+                {tc?.icon || '·'}
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[13px] leading-relaxed">{c.title || c.body}</p>
+                <div className="flex flex-wrap items-center gap-2 mt-1.5">
+                  <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ background: tc?.bg, color: tc?.color }}>
+                    {tc?.label || c.type}
+                  </span>
+                  <span className="text-[11px]" style={{ color: dc?.color || '#666' }}>{c.space.domain.name}</span>
+                  <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{c.space.name}</span>
+                  {c.status === 'open' && (
+                    <span className="text-[11px] px-1.5 py-0.5 rounded" style={{ background: '#1f2a1a', color: '#6bc9a0' }}>open</span>
+                  )}
+                  <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{c.capRef}</span>
+                </div>
               </div>
+              <span className="text-[11px] shrink-0 mt-1" style={{ color: 'var(--text-tertiary)' }}>
+                {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
+              </span>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )

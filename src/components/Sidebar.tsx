@@ -4,15 +4,14 @@ import Link from 'next/link'
 
 export default async function Sidebar() {
   const domains = await prisma.domain.findMany({
-    include: { spaces: { include: { _count: { select: { captures: true } } } } },
+    include: {
+      spaces: {
+        include: { _count: { select: { captures: true } } },
+        orderBy: { name: 'asc' },
+      },
+    },
     orderBy: { sortOrder: 'asc' },
   })
-
-  const domainCounts = domains.map(d => ({
-    ...d,
-    count: d.spaces.reduce((a, s) => a + s._count.captures, 0),
-    openCount: 0,
-  }))
 
   return (
     <aside
@@ -36,38 +35,53 @@ export default async function Sidebar() {
           <NavItem href="/captures">Todas las capturas</NavItem>
         </div>
 
-        {/* Domains */}
+        {/* Domains + Spaces */}
         <p
           className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest"
           style={{ color: 'var(--text-tertiary)' }}
         >
-          Dominios
+          Espacios
         </p>
         <div className="space-y-0.5">
-          {domainCounts.map(domain => {
+          {domains.map(domain => {
             const cfg = DOMAIN_CONFIG[domain.slug]
-            if (domain.count === 0) return null
+            const domColor = cfg?.color || '#888'
+            const activeSpaces = domain.spaces.filter(s => s._count.captures > 0)
+            if (activeSpaces.length === 0) return null
+
             return (
-              <Link
-                key={domain.slug}
-                href={`/domain/${domain.slug}`}
-                className="flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-colors hover:bg-[var(--surface-hover)] group"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                <span
-                  className="w-1.5 h-1.5 rounded-full shrink-0"
-                  style={{ background: cfg?.color || '#666' }}
-                />
-                <span className="flex-1 truncate group-hover:text-[var(--text)] transition-colors">
-                  {domain.name}
-                </span>
-                <span
-                  className="text-[11px] shrink-0"
+              <div key={domain.slug}>
+                {/* Domain header — link to domain overview */}
+                <Link
+                  href={`/domain/${domain.slug}`}
+                  className="flex items-center gap-2 px-2 py-1 rounded-md text-[12px] font-semibold uppercase tracking-wider transition-colors hover:bg-[var(--surface-hover)] group"
                   style={{ color: 'var(--text-tertiary)' }}
                 >
-                  {domain.count}
-                </span>
-              </Link>
+                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: domColor }} />
+                  <span className="flex-1 truncate group-hover:text-[var(--text-secondary)] transition-colors">
+                    {domain.name}
+                  </span>
+                </Link>
+
+                {/* Spaces indented */}
+                <div className="ml-3 mt-0.5 mb-1 space-y-0.5 border-l" style={{ borderColor: 'var(--border)' }}>
+                  {activeSpaces.map(space => (
+                    <Link
+                      key={space.id}
+                      href={`/domain/${domain.slug}/space/${space.slug}`}
+                      className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-md text-[13px] transition-colors hover:bg-[var(--surface-hover)] group"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
+                      <span className="flex-1 truncate group-hover:text-[var(--text)] transition-colors capitalize">
+                        {space.name}
+                      </span>
+                      <span className="text-[11px] shrink-0" style={{ color: 'var(--text-tertiary)' }}>
+                        {space._count.captures}
+                      </span>
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )
           })}
         </div>
