@@ -42,12 +42,12 @@ export default async function Dashboard() {
         ))}
       </div>
 
-      {/* Domains grid */}
+      {/* Domains list */}
       <div className="mb-10">
-        <h2 className="text-[13px] font-medium uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>
+        <h2 className="text-[11px] font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--text-tertiary)' }}>
           Domains
         </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        <div>
           {domains.map(domain => {
             const count = domain.spaces.reduce((a, s) => a + s.captures.length, 0)
             if (count === 0) return null
@@ -55,21 +55,26 @@ export default async function Dashboard() {
             const openCount = domain.spaces.reduce((a, s) => a + s.captures.filter(c => c.status === 'open').length, 0)
             return (
               <Link key={domain.id} href={`/domain/${domain.slug}`}
-                className="group flex items-center gap-4 rounded-lg px-4 py-3 transition-colors hover:brightness-125"
-                style={{ background: 'var(--surface)' }}
+                className="group flex items-center gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
+                style={{ borderBottom: '1px solid var(--border)' }}
               >
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ background: config?.color || '#666' }} />
+                <div className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: config?.color || '#666' }} />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-[14px] font-medium">{domain.name}</span>
-                    {domain.vault && <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Private</span>}
+                    <span className="text-[13px]">{domain.name}</span>
+                    {domain.vault && (
+                      <span className="text-[10px] px-1.5 py-0.5 rounded"
+                        style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}>
+                        Private
+                      </span>
+                    )}
                   </div>
-                  <div className="text-[12px] mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+                  <div className="text-[11px] truncate mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                     {domain.spaces.map(s => s.name).join(' · ')}
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-[14px] font-medium" style={{ color: 'var(--text-secondary)' }}>{count}</span>
+                  <span className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>{count}</span>
                   {openCount > 0 && (
                     <div className="text-[11px]" style={{ color: 'var(--accent)' }}>{openCount} open</div>
                   )}

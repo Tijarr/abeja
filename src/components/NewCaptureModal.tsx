@@ -51,18 +51,18 @@ const NewCaptureModal: React.FC = () => {
     }
   }
 
+  // Wire sidebar "Nueva captura" button via data attribute
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (target.closest('[data-new-capture]')) setIsOpen(true)
+    }
+    document.addEventListener('click', handler)
+    return () => document.removeEventListener('click', handler)
+  }, [])
+
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 w-10 h-10 rounded-full shadow-lg text-xl font-light flex items-center justify-center transition-opacity hover:opacity-80"
-        style={{ background: 'var(--text)', color: 'var(--bg)' }}
-        title="Nueva captura"
-      >
-        +
-      </button>
-
       {isOpen && (
         <div
           className="fixed inset-0 flex items-center justify-center z-50"

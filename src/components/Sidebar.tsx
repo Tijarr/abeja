@@ -23,7 +23,7 @@ export default async function Sidebar() {
         className="px-4 py-[14px] flex items-center gap-2 shrink-0"
         style={{ borderBottom: '1px solid var(--border)' }}
       >
-        <span className="text-[15px] font-semibold tracking-tight">🐝 Abeja</span>
+        <span className="text-[14px] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Abeja</span>
       </div>
 
       {/* Nav */}
