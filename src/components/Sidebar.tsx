@@ -15,7 +15,7 @@ export default async function Sidebar() {
 
   return (
     <aside
-      className="w-[240px] shrink-0 flex flex-col h-screen overflow-y-auto"
+      className="w-[260px] shrink-0 flex flex-col h-screen overflow-y-auto"
       style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}
     >
       {/* Header */}
