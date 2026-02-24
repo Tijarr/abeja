@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react'
 
-const TYPES = ['task', 'idea', 'creencia', 'reflexion', 'referencia', 'regla']
+const TYPES = ['fact', 'idea', 'tarea', 'referencia']
 
 const NewCaptureModal: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)

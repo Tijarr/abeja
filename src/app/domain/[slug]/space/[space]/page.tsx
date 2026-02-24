@@ -5,10 +5,10 @@ import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
-const TASK_TYPES = ['task', 'tarea', 'routine']
-const IDEA_TYPES = ['idea', 'concept']
-const FACT_TYPES = ['assertion', 'fact', 'creencia', 'regla', 'reflexion']
-const REF_TYPES  = ['reference', 'referencia']
+const TASK_TYPES = ['tarea']
+const IDEA_TYPES = ['idea']
+const FACT_TYPES = ['fact']
+const REF_TYPES  = ['referencia']
 
 function timeAgo(date: Date) {
   const diff = Date.now() - date.getTime()

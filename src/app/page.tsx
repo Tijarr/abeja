@@ -11,7 +11,7 @@ export default async function Dashboard() {
   })
 
   const totalCaptures = domains.reduce((acc, d) => acc + d.spaces.reduce((a, s) => a + s.captures.length, 0), 0)
-  const openTasks = domains.reduce((acc, d) => acc + d.spaces.reduce((a, s) => a + s.captures.filter(c => c.type === 'task' && c.status === 'open').length, 0), 0)
+  const openTasks = domains.reduce((acc, d) => acc + d.spaces.reduce((a, s) => a + s.captures.filter(c => c.type === 'tarea' && c.status === 'open').length, 0), 0)
   
   const typeCounts: Record<string, number> = {}
   domains.forEach(d => d.spaces.forEach(s => s.captures.forEach(c => {

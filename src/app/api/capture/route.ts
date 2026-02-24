@@ -85,7 +85,7 @@ export async function POST(req: Request) {
         body,
         tags: tags || [],
         sourceUrl,
-        status: status || (type === 'task' ? 'open' : null),
+        status: status || (type === 'tarea' ? 'open' : null),
         confidence,
         deadline: deadline ? new Date(deadline) : null,
         frequency,
