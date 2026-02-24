@@ -35,14 +35,8 @@ export default function MobileMenuDrawer({ children }: { children: React.ReactNo
           Abeja
         </Link>
 
-        {/* Nueva captura */}
-        <button
-          data-new-capture="true"
-          className="px-3 py-1.5 rounded-md text-[13px] font-medium"
-          style={{ background: 'var(--accent)', color: '#0a0a0a' }}
-        >
-          +
-        </button>
+        {/* Spacer para centrar el logo */}
+        <div className="w-[40px]" />
       </header>
 
       {/* Drawer */}
