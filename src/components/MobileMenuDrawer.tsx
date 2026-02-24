@@ -47,7 +47,12 @@ export default function MobileMenuDrawer({ children }: { children: React.ReactNo
           {/* Panel */}
           <div
             className="absolute inset-0 overflow-y-auto"
-            onClick={e => e.stopPropagation()}
+            onClick={e => {
+              // Close when a link is tapped
+              const t = e.target as HTMLElement
+              if (t.tagName === 'A' || t.closest('a')) setOpen(false)
+              else e.stopPropagation()
+            }}
           >
             {/* Close button dentro del drawer */}
             <button
