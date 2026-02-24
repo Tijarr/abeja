@@ -21,9 +21,11 @@ body {
   overflow-x: hidden;
 }
 
-/* Mobile text scale — Slack/Discord proportions */
+/* Mobile text scale — doubled for readability */
 @media (max-width: 768px) {
-  html { font-size: 16px; }
+  html { font-size: 18px; }
+  .text-mobile-sm { font-size: 14px !important; }
+  .text-mobile-xs { font-size: 13px !important; }
 }
 
 * {

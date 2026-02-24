@@ -53,7 +53,7 @@ export default async function DomainPage({ params }: { params: Promise<{ slug: s
                       {tc?.icon || '·'}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] md:text-[13px] truncate" style={{ color: 'var(--text)' }}>
+                      <p className="text-[18px] md:text-[14px] truncate" style={{ color: 'var(--text)' }}>
                         {c.title || c.body}
                       </p>
                       {c.deadline && (
@@ -89,7 +89,7 @@ export default async function DomainPage({ params }: { params: Promise<{ slug: s
       </Link>
       <div className="flex items-center gap-2.5 mb-1">
         <div className="w-2 h-2 rounded-full shrink-0" style={{ background: dc?.color || '#666' }} />
-        <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight">{domain.name}</h1>
+        <h1 className="text-[26px] md:text-[22px] font-semibold tracking-tight">{domain.name}</h1>
         {domain.vault && (
           <span className="text-[10px] px-1.5 py-0.5 rounded"
             style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}>

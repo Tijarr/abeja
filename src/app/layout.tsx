@@ -4,6 +4,7 @@ import './globals.css'
 import NewCaptureModal from '@/components/NewCaptureModal'
 import Sidebar from '@/components/Sidebar'
 import MobileMenuDrawer from '@/components/MobileMenuDrawer'
+import FAB from '@/components/FAB'
 import { cookies } from 'next/headers'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -44,6 +45,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </MobileMenuDrawer>
             <main className="flex-1 overflow-y-auto overflow-x-hidden">
               {children}
+              <FAB />
             </main>
           </div>
         </div>

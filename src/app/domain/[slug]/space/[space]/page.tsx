@@ -43,7 +43,7 @@ export default async function SpacePage({
               {tc?.icon || '·'}
             </span>
             <div className="flex-1 min-w-0">
-              <p className="text-[14px] md:text-[13px] truncate" style={{ color: 'var(--text)' }}>
+              <p className="text-[18px] md:text-[14px] truncate" style={{ color: 'var(--text)' }}>
                 {c.title || c.body}
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -88,7 +88,7 @@ export default async function SpacePage({
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight capitalize mb-1">{space.name}</h1>
+        <h1 className="text-[26px] md:text-[22px] font-semibold tracking-tight capitalize mb-1">{space.name}</h1>
         <div className="flex items-center gap-4 flex-wrap">
           <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
             {space.captures.length} capturas abiertas

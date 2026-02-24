@@ -31,7 +31,7 @@ export default async function HomePage() {
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10 max-w-full">
       {/* Header */}
       <div className="mb-6 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
-        <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight mb-1">Tareas</h1>
+        <h1 className="text-[26px] md:text-[22px] font-semibold tracking-tight mb-1">Tareas</h1>
         <div className="flex items-center gap-4 flex-wrap">
           <span className="text-[12px]" style={{ color: 'var(--accent)' }}>{tasks.length} abiertas</span>
           <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>{totalCaptures} capturas totales</span>
@@ -72,7 +72,7 @@ export default async function HomePage() {
                         {tc?.icon || '○'}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[14px] md:text-[13px] truncate" style={{ color: 'var(--text)' }}>
+                        <p className="text-[18px] md:text-[14px] truncate" style={{ color: 'var(--text)' }}>
                           {t.title || t.body}
                         </p>
                         {t.deadline && (
