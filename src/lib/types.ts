@@ -3,10 +3,10 @@ export const CAPTURE_TYPES = ['fact', 'idea', 'tarea', 'referencia'] as const
 export type CaptureType = typeof CAPTURE_TYPES[number]
 
 export const TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  fact:       { label: 'Fact',       color: '#4ea8db', bg: '#162832', icon: '●' },
-  idea:       { label: 'Idea',       color: '#bb87fc', bg: '#231b33', icon: '◇' },
-  tarea:      { label: 'Tarea',      color: '#e8ab5e', bg: '#2a2117', icon: '○' },
-  referencia: { label: 'Referencia', color: '#8b9ab0', bg: '#1e2128', icon: '→' },
+  fact:       { label: 'Fact',       color: '#4ea8db', bg: 'rgba(78, 168, 219, 0.12)',   icon: '●' },
+  idea:       { label: 'Idea',       color: '#bb87fc', bg: 'rgba(187, 135, 252, 0.12)',  icon: '◇' },
+  tarea:      { label: 'Tarea',      color: '#e8ab5e', bg: 'rgba(232, 171, 94, 0.12)',   icon: '○' },
+  referencia: { label: 'Referencia', color: '#8b9ab0', bg: 'rgba(139, 154, 176, 0.12)', icon: '→' },
 }
 
 export const DOMAIN_CONFIG: Record<string, { label: string; color: string }> = {

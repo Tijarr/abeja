@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { DOMAIN_CONFIG } from '@/lib/types'
-import Link from 'next/link'
+import { SidebarNavItem, SidebarDomainLink, SidebarSpaceLink } from './SidebarLink'
 
 export default async function Sidebar() {
   const domains = await prisma.domain.findMany({
@@ -20,7 +20,7 @@ export default async function Sidebar() {
     >
       {/* Header */}
       <div
-        className="px-4 py-[14px] flex items-center gap-2 shrink-0"
+        className="px-4 py-[14px] flex items-center shrink-0"
         style={{ borderBottom: '1px solid var(--border)' }}
       >
         <span className="text-[14px] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Abeja</span>
@@ -31,8 +31,8 @@ export default async function Sidebar() {
 
         {/* Top links */}
         <div className="space-y-0.5 mb-4">
-          <NavItem href="/">Dashboard</NavItem>
-          <NavItem href="/captures">Todas las capturas</NavItem>
+          <SidebarNavItem href="/">Inicio</SidebarNavItem>
+          <SidebarNavItem href="/captures">Capturas</SidebarNavItem>
         </div>
 
         {/* Domains + Spaces */}
@@ -51,34 +51,19 @@ export default async function Sidebar() {
 
             return (
               <div key={domain.slug}>
-                {/* Domain header — link to domain overview */}
-                <Link
+                <SidebarDomainLink
                   href={`/domain/${domain.slug}`}
-                  className="flex items-center gap-2 px-2 py-1 rounded-md text-[12px] font-semibold uppercase tracking-wider transition-colors hover:bg-[var(--surface-hover)] group"
-                  style={{ color: 'var(--text-tertiary)' }}
-                >
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: domColor }} />
-                  <span className="flex-1 truncate group-hover:text-[var(--text-secondary)] transition-colors">
-                    {domain.name}
-                  </span>
-                </Link>
-
-                {/* Spaces indented */}
+                  color={domColor}
+                  name={domain.name}
+                />
                 <div className="ml-3 mt-0.5 mb-1 space-y-0.5 border-l" style={{ borderColor: 'var(--border)' }}>
                   {activeSpaces.map(space => (
-                    <Link
+                    <SidebarSpaceLink
                       key={space.id}
                       href={`/domain/${domain.slug}/space/${space.slug}`}
-                      className="flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-md text-[13px] transition-colors hover:bg-[var(--surface-hover)] group"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                      <span className="flex-1 truncate group-hover:text-[var(--text)] transition-colors capitalize">
-                        {space.name}
-                      </span>
-                      <span className="text-[11px] shrink-0" style={{ color: 'var(--text-tertiary)' }}>
-                        {space._count.captures}
-                      </span>
-                    </Link>
+                      count={space._count.captures}
+                      name={space.name}
+                    />
                   ))}
                 </div>
               </div>
@@ -93,26 +78,14 @@ export default async function Sidebar() {
         style={{ borderTop: '1px solid var(--border)' }}
       >
         <button
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-[13px] font-medium transition-opacity hover:opacity-85"
+          className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-md text-[13px] font-medium transition-opacity hover:opacity-85"
           style={{ background: 'var(--accent)', color: '#0a0a0a' }}
           data-new-capture="true"
         >
-          <span className="text-[15px] leading-none">+</span>
+          <span className="text-[14px] leading-none font-light">+</span>
           Nueva captura
         </button>
       </div>
     </aside>
-  )
-}
-
-function NavItem({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="flex items-center gap-2 px-2 py-1.5 rounded-md text-[13px] transition-colors hover:bg-[var(--surface-hover)]"
-      style={{ color: 'var(--text-secondary)' }}
-    >
-      {children}
-    </Link>
   )
 }
