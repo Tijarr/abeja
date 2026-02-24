@@ -3,7 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import NewCaptureModal from '@/components/NewCaptureModal'
 import Sidebar from '@/components/Sidebar'
-import MobileNav from '@/components/MobileNav'
+import MobileMenuDrawer from '@/components/MobileMenuDrawer'
 import { cookies } from 'next/headers'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -38,7 +38,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
           {/* Main area */}
           <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-            <MobileNav />
+            {/* Mobile: header + hamburger drawer con sidebar completo */}
+            <MobileMenuDrawer>
+              <Sidebar />
+            </MobileMenuDrawer>
             <main className="flex-1 overflow-y-auto">
               {children}
             </main>
