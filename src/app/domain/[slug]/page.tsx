@@ -52,6 +52,7 @@ export default async function DomainPage({ params }: { params: Promise<{ slug: s
       {/* Spaces */}
       {domain.spaces.map(space => {
         const activeCaptures = space.captures.filter(c =>
+          c.status === 'open' &&
           !c.body.startsWith('[ELIMINAD') &&
           !c.body.startsWith('[FUSIONAD') &&
           !c.body.startsWith('[MOVIDA') &&

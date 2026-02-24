@@ -6,7 +6,7 @@ export default async function Sidebar() {
   const domains = await prisma.domain.findMany({
     include: {
       spaces: {
-        include: { _count: { select: { captures: true } } },
+        include: { _count: { select: { captures: { where: { status: 'open' } } } } },
         orderBy: { name: 'asc' },
       },
     },

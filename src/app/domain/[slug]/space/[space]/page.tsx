@@ -29,9 +29,9 @@ export default async function SpacePage({
   const all = space.captures
   const open = all.filter(c => c.status === 'open')
 
-  // Group by type
+  // Group by type — only active (open) items
   const byType: Record<string, typeof all> = {}
-  all.forEach(c => {
+  open.forEach(c => {
     byType[c.type] = byType[c.type] || []
     byType[c.type].push(c)
   })
