@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma'
 import { TYPE_CONFIG, DOMAIN_CONFIG } from '@/lib/types'
 import Link from 'next/link'
+// Captures are clickable → /captures/[id]
 
 export const dynamic = 'force-dynamic'
 
@@ -25,7 +26,7 @@ export default async function Dashboard() {
   })
 
   return (
-    <div className="px-8 pt-6 pb-10">
+    <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10">
       {/* Header */}
       <div className="mb-6">
         <h1 className="text-[22px] font-semibold tracking-tight mb-0.5">Abeja</h1>
@@ -95,7 +96,8 @@ export default async function Dashboard() {
             const tc = TYPE_CONFIG[c.type]
             const dc = DOMAIN_CONFIG[c.space.domain.slug]
             return (
-              <div key={c.id} className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
+              <Link key={c.id} href={`/captures/${c.id}`}
+                className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
                 style={{ borderBottom: '1px solid var(--border)' }}>
                 <span className="text-[13px] mt-0.5 shrink-0 leading-none" style={{ color: tc?.color || 'var(--text-tertiary)' }}>
                   {tc?.icon || '·'}
@@ -120,7 +122,7 @@ export default async function Dashboard() {
                 <span className="text-[11px] shrink-0 mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                   {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
                 </span>
-              </div>
+              </Link>
             )
           })}
         </div>

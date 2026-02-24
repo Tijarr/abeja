@@ -22,7 +22,7 @@ export default async function CapturesPage({ searchParams }: { searchParams: Pro
   const domains = await prisma.domain.findMany({ orderBy: { sortOrder: 'asc' } })
 
   return (
-    <div className="px-8 pt-6 pb-10">
+    <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10">
       <Link href="/" className="text-[12px] mb-5 inline-flex items-center gap-1 transition-opacity hover:opacity-70"
         style={{ color: 'var(--text-tertiary)' }}>← Inicio</Link>
 
@@ -59,7 +59,8 @@ export default async function CapturesPage({ searchParams }: { searchParams: Pro
           const tc = TYPE_CONFIG[c.type]
           const dc = DOMAIN_CONFIG[c.space.domain.slug]
           return (
-            <div key={c.id} className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
+            <Link key={c.id} href={`/captures/${c.id}`}
+              className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
               style={{ borderBottom: '1px solid var(--border)' }}>
               <span className="text-[13px] mt-0.5 shrink-0 leading-none" style={{ color: tc?.color || 'var(--text-tertiary)' }}>
                 {tc?.icon || '·'}
@@ -81,7 +82,7 @@ export default async function CapturesPage({ searchParams }: { searchParams: Pro
               <span className="text-[11px] shrink-0 mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                 {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
               </span>
-            </div>
+            </Link>
           )
         })}
       </div>
