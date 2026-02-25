@@ -1,94 +1,73 @@
 import { prisma } from '@/lib/prisma'
-import { TYPE_CONFIG, DOMAIN_CONFIG } from '@/lib/types'
+import { SPACE_CONFIG } from '@/lib/types'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [tasks, totalOpen, totalCaptures] = await Promise.all([
-    prisma.capture.findMany({
-      where: { status: 'open', type: 'tarea' },
-      include: { space: { include: { domain: true } } },
+  const [tasks, totalTasks] = await Promise.all([
+    prisma.task.findMany({
+      where: { status: 'open' },
+      include: { space: true },
       orderBy: { createdAt: 'desc' },
     }),
-    prisma.capture.count({ where: { status: 'open' } }),
-    prisma.capture.count(),
+    prisma.task.count(),
   ])
 
-  // Group by domain
-  const byDomain: Record<string, { domain: any; spaces: Record<string, { space: any; tasks: typeof tasks }> }> = {}
+  const bySpace: Record<string, { space: typeof tasks[number]['space']; tasks: typeof tasks }> = {}
   for (const t of tasks) {
-    const dslug = t.space.domain.slug
-    if (!byDomain[dslug]) byDomain[dslug] = { domain: t.space.domain, spaces: {} }
-    const sslug = t.space.slug
-    if (!byDomain[dslug].spaces[sslug]) byDomain[dslug].spaces[sslug] = { space: t.space, tasks: [] }
-    byDomain[dslug].spaces[sslug].tasks.push(t)
+    if (!bySpace[t.space.slug]) bySpace[t.space.slug] = { space: t.space, tasks: [] }
+    bySpace[t.space.slug].tasks.push(t)
   }
-
-  const tc = TYPE_CONFIG['tarea']
 
   return (
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10 max-w-full">
-      {/* Header */}
       <div className="mb-6 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
         <h1 className="text-[26px] md:text-[22px] font-semibold tracking-tight mb-1">Tareas</h1>
         <div className="flex items-center gap-4 flex-wrap">
           <span className="text-[12px]" style={{ color: 'var(--accent)' }}>{tasks.length} abiertas</span>
-          <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>{totalCaptures} capturas totales</span>
+          <span className="text-[12px]" style={{ color: 'var(--text-tertiary)' }}>{totalTasks} totales</span>
         </div>
       </div>
 
-      {/* Tasks by domain */}
-      {Object.values(byDomain).map(({ domain, spaces }) => {
-        const dc = DOMAIN_CONFIG[domain.slug]
+      {Object.values(bySpace).map(({ space, tasks: spaceTasks }) => {
+        const sc = SPACE_CONFIG[space.slug]
+        const color = space.color || sc?.color || '#888'
         return (
-          <div key={domain.slug} className="mb-8">
-            {/* Domain header */}
-            <Link href={`/domain/${domain.slug}`}
+          <div key={space.slug} className="mb-6">
+            <Link href={`/space/${space.slug}`}
               className="flex items-center gap-2 mb-3 transition-opacity hover:opacity-70">
-              <div className="w-2 h-2 rounded-full shrink-0" style={{ background: dc?.color || '#888' }} />
+              <div className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
               <span className="text-[11px] font-semibold uppercase tracking-widest"
-                style={{ color: dc?.color || 'var(--text-tertiary)' }}>
-                {domain.name}
+                style={{ color }}>
+                {space.name}
+              </span>
+              <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
+                {spaceTasks.length}
               </span>
             </Link>
-
-            {Object.values(spaces).map(({ space, tasks: spaceTasks }) => (
-              <div key={space.slug} className="mb-5 ml-4">
-                {/* Space label */}
-                <Link href={`/domain/${domain.slug}/space/${space.slug}`}
-                  className="text-[11px] mb-2 inline-flex items-center gap-1 transition-opacity hover:opacity-70"
-                  style={{ color: 'var(--text-tertiary)' }}>
-                  {space.name}
-                  <span>·</span>
-                  <span style={{ color: 'var(--accent)' }}>{spaceTasks.length}</span>
+            <div>
+              {spaceTasks.map(t => (
+                <Link key={t.id} href={`/task/${t.id}`}
+                  className="group flex items-start gap-3 px-2 py-3 rounded-md transition-colors hover:bg-[var(--surface)]"
+                  style={{ borderBottom: '1px solid var(--border)' }}>
+                  <div className="w-1 shrink-0 rounded-full self-stretch mt-0.5" style={{ background: color, opacity: 0.6 }} />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[15px] md:text-[14px] leading-snug" style={{ color: 'var(--text)' }}>
+                      {t.title || t.body}
+                    </p>
+                    {t.deadline && (
+                      <span className="text-[11px] mt-1 inline-block" style={{ color: 'var(--accent)' }}>
+                        {new Date(t.deadline).toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] shrink-0 mt-0.5 ml-3" style={{ color: 'var(--text-tertiary)' }}>
+                    {t.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
+                  </span>
                 </Link>
-                <div>
-                  {spaceTasks.map(t => (
-                    <Link key={t.id} href={`/captures/${t.id}`}
-                      className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
-                      style={{ borderBottom: '1px solid var(--border)' }}>
-                      <span className="text-[13px] mt-0.5 shrink-0" style={{ color: tc?.color || 'var(--text-tertiary)' }}>
-                        {tc?.icon || '○'}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-[18px] md:text-[14px] truncate" style={{ color: 'var(--text)' }}>
-                          {t.title || t.body}
-                        </p>
-                        {t.deadline && (
-                          <span className="text-[11px] mt-0.5 block" style={{ color: 'var(--accent)' }}>
-                            {new Date(t.deadline).toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
-                          </span>
-                        )}
-                      </div>
-                      <span className="text-[11px] shrink-0 mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
-                        {t.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
-                      </span>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )
       })}

@@ -3,11 +3,11 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET() {
   try {
-    const domains = await prisma.domain.findMany({
+    const spaces = await prisma.space.findMany({
       orderBy: { sortOrder: 'asc' },
-      select: { slug: true, name: true },
+      select: { slug: true, name: true, color: true },
     })
-    return NextResponse.json({ domains })
+    return NextResponse.json({ spaces })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }

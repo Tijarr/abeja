@@ -3,6 +3,7 @@ export default function FAB() {
   return (
     <button
       data-new-capture="true"
+      aria-label="Nueva captura"
       className="md:hidden fixed z-40"
       style={{
         bottom: '24px',

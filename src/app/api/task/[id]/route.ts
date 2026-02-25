@@ -1,44 +1,40 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
-// PUT /api/capture/[id]
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
+    if (isNaN(id)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
     const data = await req.json()
-    const { body, title, type, status, confidence, deadline, frequency, tags, sourceUrl, metadata, spaceId } = data
+    const { body, title, status, deadline, tags, spaceId } = data
 
-    const capture = await prisma.capture.update({
+    const task = await prisma.task.update({
       where: { id },
       data: {
         ...(body !== undefined && { body }),
         ...(title !== undefined && { title }),
-        ...(type !== undefined && { type }),
         ...(status !== undefined && { status }),
-        ...(confidence !== undefined && { confidence }),
         ...(deadline !== undefined && { deadline: deadline ? new Date(deadline) : null }),
-        ...(frequency !== undefined && { frequency }),
         ...(tags !== undefined && { tags }),
-        ...(sourceUrl !== undefined && { sourceUrl }),
-        ...(metadata !== undefined && { metadata }),
         ...(spaceId !== undefined && { spaceId }),
+        ...(status === 'done' && { completedAt: new Date() }),
       },
-      include: { space: { include: { domain: true } } },
+      include: { space: true },
     })
 
-    return NextResponse.json({ ok: true, capture })
+    return NextResponse.json({ ok: true, task })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })
   }
 }
 
-// DELETE /api/capture/[id]
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id: idStr } = await params
     const id = parseInt(idStr)
-    await prisma.capture.delete({ where: { id } })
+    if (isNaN(id)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
+    await prisma.task.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e) {
     return NextResponse.json({ error: String(e) }, { status: 500 })

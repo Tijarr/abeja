@@ -5,21 +5,19 @@ import NewCaptureModal from '@/components/NewCaptureModal'
 import Sidebar from '@/components/Sidebar'
 import MobileMenuDrawer from '@/components/MobileMenuDrawer'
 import FAB from '@/components/FAB'
-import { cookies } from 'next/headers'
+import { isAuthenticated } from '@/lib/auth'
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Abeja',
-  description: 'Context engine personal',
+  description: 'Tablero de control',
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = await cookies()
-  const authCookie = cookieStore.get('abeja_auth')?.value
-  const isAuthenticated = !!authCookie && authCookie.length > 0
+  const authed = await isAuthenticated()
 
-  if (!isAuthenticated) {
+  if (!authed) {
     return (
       <html lang="es">
         <body className={inter.className} style={{ background: 'var(--bg)', color: 'var(--text)' }}>

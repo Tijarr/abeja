@@ -7,103 +7,53 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// SQLite doesn't support enums — use String fields with validation
-
-model Domain {
-  id        Int      @id @default(autoincrement())
-  name      String
-  slug      String   @unique
-  vault     Boolean  @default(false)
-  sortOrder Int      @default(0)
-  spaces    Space[]
-  createdAt DateTime @default(now())
-}
-
 model Space {
+  id        Int       @id @default(autoincrement())
+  name      String
+  slug      String    @unique
+  color     String?   @default("#8b9ab0")
+  sortOrder Int?      @default(0)
+  contacts  Contact[]
+  tasks     Task[]
+}
+
+model Task {
   id          Int       @id @default(autoincrement())
-  domain      Domain    @relation(fields: [domainId], references: [id])
-  domainId    Int
-  name        String
-  slug        String
-  mode        String    @default("creation") // creation | operation
-  coverImage  String?   // imagen para card en vista de dominio
-  phase       String    @default("operation") // idea|concept|prototype|product|operation|hold|closed
-  captures    Capture[]
-
-  @@unique([domainId, slug])
-}
-
-model Capture {
-  id          Int         @id @default(autoincrement())
-  space       Space       @relation(fields: [spaceId], references: [id])
   spaceId     Int
-  type        String      // fact|idea|tarea|referencia (v2: 4 primitivos)
-  title       String?     // Auto-generated from first 80 chars of body if not provided
-  body        String      // markdown para idea/tarea | enunciado para fact
-  tags        String[]    // Array of strings
-  sourceUrl   String?     // URL de origen
-  attachments Json?       // Metadata de archivos adjuntos
-  metadata    Json?       // Campos flexibles (episodic, weight, subtype, etc.)
+  title       String?
+  body        String
+  tags        String[]
   status      String?
-  confidence  String?
   deadline    DateTime?
-  frequency   String?
   source      String?
-  capRef      String?     @unique // cap-001, cap-002...
-
-  // v2: fractal — un capture puede ser hijo de otro
-  parentId    Int?
-  parent      Capture?    @relation("CaptureChildren", fields: [parentId], references: [id])
-  children    Capture[]   @relation("CaptureChildren")
-
-  // v2: fact-specific
-  rooting     String?     // 'structural' | 'signal'
-  scope       String?     // 'task' | 'space' | 'domain' | 'global'
-
-  // v2: idea-specific
-  manualOrder Int?        // posición drag-and-drop en la vista de ideas
-
-  // v2: tarea-specific
-  completedAt DateTime?   // timestamp de finalización
-  assignedTo  Int?        // id de Capture tipo referencia/persona
-
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  fromConnections CaptureConnection[] @relation("from")
-  toConnections   CaptureConnection[] @relation("to")
-  comments        Comment[]
-  events          Event[]
+  capRef      String?   @unique
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  completedAt DateTime?
+  comments    Comment[]
+  space       Space     @relation(fields: [spaceId], references: [id], map: "Capture_spaceId_fkey")
 }
 
-model CaptureConnection {
-  id           Int     @id @default(autoincrement())
-  from         Capture @relation("from", fields: [fromId], references: [id])
-  fromId       Int
-  to           Capture @relation("to", fields: [toId], references: [id])
-  toId         Int
-  relationType String  // extracted_from|inspired_by|concretizes|supersedes|contradicts|assigned_to|involves|...
-  metadata     Json?   // metadata flexible del edge
-}
-
-// v2: comentarios en cualquier capture (humano o agente)
 model Comment {
-  id         Int      @id @default(autoincrement())
-  capture    Capture  @relation(fields: [captureId], references: [id])
-  captureId  Int
-  body       String   // markdown
-  author     String   // 'angel' | 'tijarobot' | agent-id
-  authorType String   @default("human") // 'human' | 'agent'
-  metadata   Json?
-  createdAt  DateTime @default(now())
+  id          Int      @id @default(autoincrement())
+  taskId      Int
+  body        String
+  author      String
+  authorType  String   @default("human")
+  metadata    Json?
+  createdAt   DateTime @default(now())
+  attachments Json?
+  task        Task     @relation(fields: [taskId], references: [id])
 }
 
-model Event {
-  id        Int      @id @default(autoincrement())
-  capture   Capture  @relation(fields: [captureId], references: [id])
-  captureId Int
-  action    String
-  actor     String?  // quien disparó el evento ('angel' | agent-id)
-  snapshot  String?  // JSON string
-  createdAt DateTime @default(now())
+model Contact {
+  id        Int       @id @default(autoincrement())
+  spaceId   Int
+  name      String
+  role      String?
+  email     String?
+  phone     String?
+  notes     String?
+  createdAt DateTime? @default(now())
+  space     Space     @relation(fields: [spaceId], references: [id])
 }

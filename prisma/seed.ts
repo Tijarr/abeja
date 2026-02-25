@@ -7,17 +7,19 @@ const prisma = new PrismaClient()
 const SEED_DIR = path.join(__dirname, '..', 'seed-data')
 
 const TYPE_MAPPING: Record<string, string> = {
-  'task': 'task',
+  'task': 'tarea',
+  'tarea': 'tarea',
   'idea': 'idea',
-  'assertion': 'creencia',
   'concept': 'idea',
-  'reflection': 'reflexion',
+  'assertion': 'fact',
+  'creencia': 'fact',
+  'reflection': 'fact',
+  'reflexion': 'fact',
+  'routine': 'fact',
+  'regla': 'fact',
   'reference': 'referencia',
-  'routine': 'regla',
-  'creencia': 'creencia',
-  'regla': 'regla',
-  'reflexion': 'reflexion',
-  'referencia': 'referencia'
+  'referencia': 'referencia',
+  'fact': 'fact',
 }
 
 interface ParsedCapture {
@@ -94,7 +96,7 @@ async function main() {
 
     for (const spaceName of config.spaces) {
       await prisma.space.create({
-        data: { domainId: domain.id, name: spaceName, slug: spaceName, mode: 'CREATION' }
+        data: { domainId: domain.id, name: spaceName, slug: spaceName, mode: 'creation' }
       })
     }
   }
