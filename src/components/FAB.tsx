@@ -16,7 +16,7 @@ export default function FAB() {
         fontSize: '28px',
         fontWeight: '300',
         lineHeight: 1,
-        boxShadow: '0 4px 16px rgba(232,171,94,0.4)',
+        boxShadow: 'none',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',

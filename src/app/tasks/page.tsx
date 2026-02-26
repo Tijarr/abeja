@@ -78,10 +78,10 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   }
 
   return (
-    <div className="px-4 md:px-6 pt-4 md:pt-5 pb-10">
-      <div className="flex items-center justify-between mb-4">
+    <div className="px-4 md:px-8 pb-10">
+      <div className="h-[52px] flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text)' }}>Tareas</h1>
+          <h1 className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>Tareas</h1>
           <span className="text-[12px] font-mono" style={{ color: 'var(--text-tertiary)' }}>{tasks.length}</span>
         </div>
       </div>
@@ -104,7 +104,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
           </select>
           <input type="hidden" name="status" value={statusFilter} />
           <button type="submit" className="h-7 px-3 rounded-md text-[11px] font-medium transition-opacity hover:opacity-90"
-            style={{ background: 'var(--accent)', color: 'var(--on-accent, #0a0a0a)' }}>
+            style={{ background: 'var(--accent)', color: '#0a0a0a', boxShadow: 'none' }}>
             Filtrar
           </button>
         </form>
@@ -115,28 +115,28 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
           const done = t.status === 'done'
           return (
             <Link key={t.id} href={`/task/${t.id}`}
-              className="group flex items-start gap-2 py-2 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
-              <span className="mt-[3px] shrink-0"><StatusIcon done={done} /></span>
-              <span className="text-[13px] flex-1 min-w-0"
+              className="group flex items-center gap-2.5 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
+              <StatusIcon done={done} />
+              <span className="text-[14px] truncate flex-1 min-w-0"
                 style={{ color: done ? 'var(--text-tertiary)' : 'var(--text)' }}>
                 {t.title || t.body}
               </span>
-              <span className="text-[10px] shrink-0 hidden md:inline mt-[2px]"
+              <span className="text-[10px] shrink-0 hidden md:inline"
                 style={{ color: t.space.domain.color }}>
                 {t.space.domain.name}
               </span>
-              <span className="text-[10px] shrink-0 hidden md:inline mt-[2px]"
+              <span className="text-[10px] shrink-0 hidden md:inline"
                 style={{ color: t.space.color || t.space.domain.color }}>
                 {t.space.name}
               </span>
               {t.type !== 'normal' && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0 mt-[2px]"
-                  style={{ background: 'rgba(200,241,53,0.1)', color: 'var(--accent)' }}>
+                <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
+                  style={{ background: 'rgba(200,241,53,0.08)', color: 'var(--accent)' }}>
                   {t.type}
                 </span>
               )}
-              {t.assignee && <span className="mt-[1px]"><Initials name={t.assignee} /></span>}
-              <span className="text-[11px] font-mono shrink-0 mt-[2px]"
+              {t.assignee && <Initials name={t.assignee} />}
+              <span className="text-[11px] font-mono shrink-0"
                 style={{ color: 'var(--text-tertiary)' }}>
                 {t.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
               </span>

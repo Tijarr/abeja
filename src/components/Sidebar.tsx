@@ -17,9 +17,9 @@ export default async function Sidebar() {
       className="w-full md:w-[220px] shrink-0 flex flex-col h-screen overflow-y-auto"
       style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}
     >
-      <div className="px-4 py-3 flex items-center shrink-0"
+      <div className="px-4 h-[52px] flex items-center shrink-0"
         style={{ borderBottom: '1px solid var(--border)' }}>
-        <span className="text-[13px] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Abeja</span>
+        <span className="text-[15px] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Abeja</span>
       </div>
 
       <nav className="flex-1 px-2 py-2 overflow-y-auto">
@@ -57,7 +57,7 @@ export default async function Sidebar() {
       <div className="px-2 py-2 shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
         <button
           className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium transition-opacity hover:opacity-85"
-          style={{ background: 'var(--accent)', color: '#0a0a0a' }}
+          style={{ background: 'var(--accent)', color: '#0a0a0a', boxShadow: 'none' }}
           data-new-capture="true"
         >
           <span className="text-[13px] leading-none font-light">+</span>
