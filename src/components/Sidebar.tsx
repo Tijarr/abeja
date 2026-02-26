@@ -13,7 +13,7 @@ export default async function Sidebar() {
   })
 
   return (
-    <aside
+    <div
       className="w-full md:w-[220px] shrink-0 flex flex-col h-screen overflow-y-auto"
       style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}
     >
@@ -64,6 +64,6 @@ export default async function Sidebar() {
           Nueva tarea
         </button>
       </div>
-    </aside>
+    </div>
   )
 }

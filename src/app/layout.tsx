@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={inter.className} style={{ background: 'var(--bg)', color: 'var(--text)' }}>
         <div className="flex h-screen overflow-hidden">
           {/* Sidebar — desktop only */}
-          <div className="hidden md:flex md:shrink-0">
+          <div className="hidden md:flex md:shrink-0" suppressHydrationWarning>
             <Sidebar />
           </div>
           {/* Main area */}
