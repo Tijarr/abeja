@@ -1,20 +1,4 @@
-export const SPACE_CONFIG: Record<string, { label: string; color: string }> = {
-  'pajarillo':           { label: 'Pajarillo',           color: '#6bc9a0' },
-  'finca-legal':         { label: 'Finca Legal',         color: '#6bc9a0' },
-  'vecino-editorial':    { label: 'Vecino Editorial',    color: '#d4636c' },
-  'vecino-producto':     { label: 'Vecino Producto',     color: '#d4636c' },
-  'republica-malandra':  { label: 'República Malandra',  color: '#d4636c' },
-  'canticuento':         { label: 'Canticuento',         color: '#bb87fc' },
-  'canticuento-producto':{ label: 'Canticuento Producto', color: '#bb87fc' },
-  'personal':            { label: 'Personal',            color: '#e07eb4' },
-  'maximas':             { label: 'Máximas',             color: '#e07eb4' },
-  'blog':                { label: 'Blog',                color: '#e07eb4' },
-  'familia-hijos':       { label: 'Familia Hijos',       color: '#4ea8db' },
-  'familia-hogar':       { label: 'Familia Hogar',       color: '#4ea8db' },
-  'abeja':               { label: 'Abeja',               color: '#e8ab5e' },
-  'abeja-meta':          { label: 'Abeja Meta',          color: '#e8ab5e' },
-  'abeja-ux':            { label: 'Abeja UX',            color: '#e8ab5e' },
-  'sandbox':             { label: 'Sandbox',             color: '#8b9ab0' },
-  'mipqrsd':             { label: 'MiPQRSD',             color: '#6bc9a0' },
-  'diseno-ux':           { label: 'Diseño UX',           color: '#d4a0e0' },
-}
+// Domain and space colors are now stored in the database.
+// This file is kept for any future shared type definitions.
+
+export const DEFAULT_COLOR = '#8b9ab0'

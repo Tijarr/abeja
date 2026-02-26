@@ -28,7 +28,7 @@ export async function GET(req: Request) {
     const [tasks, total] = await Promise.all([
       prisma.task.findMany({
         where,
-        include: { space: true },
+        include: { space: { include: { domain: true } } },
         orderBy: { createdAt: 'desc' },
         take: limit,
         skip: offset,
@@ -45,16 +45,16 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const data = await req.json()
-    const { body, title, space: spaceSlug, deadline, tags } = data
+    const { body, title, space: spaceSlug, deadline, tags, type, assignee } = data
 
     if (!body) return NextResponse.json({ error: 'body required' }, { status: 400 })
 
     let spaceRecord = spaceSlug
-      ? await prisma.space.findUnique({ where: { slug: spaceSlug } })
+      ? await prisma.space.findFirst({ where: { slug: spaceSlug } })
       : null
 
     if (!spaceRecord) {
-      spaceRecord = await prisma.space.findUnique({ where: { slug: 'sandbox' } })
+      spaceRecord = await prisma.space.findFirst({ where: { slug: 'sandbox' } })
     }
 
     if (!spaceRecord) return NextResponse.json({ error: 'no space found' }, { status: 500 })
@@ -73,6 +73,8 @@ export async function POST(req: Request) {
         spaceId: spaceRecord.id,
         title: autoTitle,
         body,
+        type: type || 'normal',
+        assignee: assignee || null,
         tags: tags || [],
         status: 'open',
         deadline: deadline ? new Date(deadline) : null,

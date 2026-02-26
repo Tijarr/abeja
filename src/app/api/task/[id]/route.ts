@@ -7,7 +7,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const id = parseInt(idStr)
     if (isNaN(id)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
     const data = await req.json()
-    const { body, title, status, deadline, tags, spaceId } = data
+    const { body, title, status, deadline, tags, spaceId, type, assignee } = data
 
     const task = await prisma.task.update({
       where: { id },
@@ -18,6 +18,8 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
         ...(deadline !== undefined && { deadline: deadline ? new Date(deadline) : null }),
         ...(tags !== undefined && { tags }),
         ...(spaceId !== undefined && { spaceId }),
+        ...(type !== undefined && { type }),
+        ...(assignee !== undefined && { assignee }),
         ...(status === 'done' && { completedAt: new Date() }),
       },
       include: { space: true },
@@ -34,6 +36,8 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     const { id: idStr } = await params
     const id = parseInt(idStr)
     if (isNaN(id)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
+    await prisma.comment.deleteMany({ where: { taskId: id } })
+    await prisma.taskDocument.deleteMany({ where: { taskId: id } })
     await prisma.task.delete({ where: { id } })
     return NextResponse.json({ ok: true })
   } catch (e) {

@@ -17,11 +17,14 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
   const tasks = await prisma.task.findMany({
     where,
     orderBy: { createdAt: 'desc' },
-    include: { space: true },
+    include: { space: { include: { domain: true } } },
     take: 200,
   })
 
-  const spaces = await prisma.space.findMany({ orderBy: { sortOrder: 'asc' } })
+  const spaces = await prisma.space.findMany({
+    orderBy: { sortOrder: 'asc' },
+    include: { domain: { select: { name: true } } },
+  })
 
   return (
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10">
@@ -40,7 +43,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
           className="px-3 py-1.5 rounded-md text-[13px]"
           style={{ background: 'var(--surface)', border: '1px solid var(--border)', color: 'var(--text)' }}>
           <option value="">Todos los espacios</option>
-          {spaces.map(s => <option key={s.slug} value={s.slug}>{s.name}</option>)}
+          {spaces.map(s => <option key={s.slug} value={s.slug}>{s.domain.name} / {s.name}</option>)}
         </select>
         <select name="status" defaultValue={sp.status || ''}
           className="px-3 py-1.5 rounded-md text-[13px]"
@@ -57,7 +60,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
 
       <div>
         {tasks.map(t => {
-          const color = t.space.color || '#888'
+          const color = t.space.color || t.space.domain.color
           return (
             <Link key={t.id} href={`/task/${t.id}`}
               className="group flex items-start gap-3 px-1 py-2.5 transition-colors hover:bg-[var(--surface)]"
@@ -67,9 +70,19 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
                 {t.status === 'done' ? '●' : '○'}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] truncate" style={{ color: 'var(--text)' }}>{t.title || t.body}</p>
+                <p className="text-[13px]" style={{ color: 'var(--text)' }}>{t.title || t.body}</p>
                 <div className="flex flex-wrap items-center gap-2 mt-1">
+                  <span className="text-[10px]" style={{ color: t.space.domain.color }}>{t.space.domain.name}</span>
                   <span className="text-[11px]" style={{ color }}>{t.space.name}</span>
+                  {t.type !== 'normal' && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded"
+                      style={{ background: 'rgba(232,171,94,0.12)', color: 'var(--accent)' }}>
+                      {t.type}
+                    </span>
+                  )}
+                  {t.assignee && (
+                    <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>→ {t.assignee}</span>
+                  )}
                   {t.status === 'open' && (
                     <span className="text-[11px] px-1.5 py-0.5 rounded"
                       style={{ background: 'rgba(107, 201, 160, 0.12)', color: '#6bc9a0' }}>abierta</span>

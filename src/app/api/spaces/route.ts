@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const spaces = await prisma.space.findMany({
       orderBy: { sortOrder: 'asc' },
-      select: { slug: true, name: true, color: true },
+      select: { slug: true, name: true, color: true, domain: { select: { slug: true, name: true } } },
     })
     return NextResponse.json({ spaces })
   } catch (e) {

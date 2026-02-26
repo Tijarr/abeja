@@ -1,21 +1,21 @@
 # Abeja — Context
 
-**Ultima actualizacion**: 2026-02-24
+**Ultima actualizacion**: 2026-02-25
 **Para**: el builder (IA en Cursor que construye el software)
 
 ---
 
 ## Que es Abeja
 
-Tablero de control. Angel se sienta, ve el estado de todos sus proyectos, decide que hacer, y luego va a la estacion correcta a ejecutar.
+Sistema de despacho de tareas con interfaz web y API para agentes. Angel se sienta, ve el estado de todos sus proyectos organizados por dominio y espacio, decide que hacer, y despacha trabajo a agentes o lo ejecuta el mismo.
 
-**No es** un second brain, no es un task manager, no es donde se construye software ni donde se operan productos. Es donde se piensa y se decide.
+**No es** un second brain (eso es `~/brain/`). No es donde se construye software ni donde se operan productos. Es donde se piensa, se decide, y se despacha.
 
 ---
 
 ## Los tres sombreros
 
-Angel opera en tres modos. Cada modo tiene su propia interfaz y su propio estado mental. Cambiar de interfaz ayuda al cambio de sombrero.
+Angel opera en tres modos. Cada modo tiene su propia interfaz y su propio estado mental.
 
 ```
 PENSAR (Abeja)          CONSTRUIR (Fabrica)         OPERAR (cada producto)
@@ -28,114 +28,101 @@ Interfaz: Abeja web     Interfaz: Cursor/IDE        Interfaz: cada app
 Frecuencia: diario      Frecuencia: por proyecto    Frecuencia: operativa
 ```
 
-### Abeja (pensar)
-
-Tablero donde Angel ve el estado de todo. Tasks por proyecto, contexto acumulado, contactos, decisiones pendientes. Es rapido, es un vistazo. No se construye aqui.
-
-### Fabrica (construir)
-
-Hoy es Angel + IA en Cursor. El proceso de ir de idea a producto desplegado: PRD, UX, arquitectura, implementacion, deploy, mejoras. Eventualmente se formaliza como pipeline propio, pero hoy es un proceso manual con IA. No es parte del codigo de Abeja.
-
-### Productos (operar)
-
-Pajarillo tiene su UI ganadera. Vecino tiene su editorial. Cada producto vive en su propio repo, con su propio stack, su propia interfaz. Abeja solo sabe que existen y que tareas tienen pendientes.
-
 ---
 
 ## Modelo de datos
 
-Dos niveles. Un solo tipo.
+Tres niveles. Tasks con tipo y responsable.
 
 ```
-Space (proyecto)
-  └── Task (unidad de trabajo)
-        ├── Comentarios (texto, con adjuntos)
-        ├── Estado (open, done)
-        └── Metadata (deadline, tags, source)
+Domain (agrupacion)
+  └── Space (proyecto)
+        └── Task (unidad de trabajo)
+              ├── Comentarios (texto)
+              ├── Documentos (archivos, URLs)
+              ├── Estado (open, done)
+              ├── Tipo (normal, por defecto; evoluciona a tipos con instrucciones)
+              ├── Responsable (nullable)
+              └── Metadata (deadline, tags, source, capRef)
 
-Contacto (asociado al Space, no a la task)
+Contacto (asociado al Space)
+Documento (asociado al Space, vinculado a Tasks)
+TaskType (template: instrucciones, herramientas, estructura)
 ```
+
+### Domain
+Agrupacion de alto nivel. Organiza spaces por area de vida/trabajo. Tiene color y orden. Ejemplos: "Finca", "Media", "Personal", "Abeja".
+
+### Space
+Proyecto o area dentro de un domain. Tiene slug unico dentro del domain. Cada space acumula tasks, contactos y documentos propios.
 
 ### Task
+Unidad de trabajo. Tiene un tipo (default "normal") y un responsable opcional. El contexto se acumula en comentarios y documentos vinculados. Cuando una tarea se repite, su tipo evoluciona a un TaskType con instrucciones para agentes.
 
-Lo unico que se captura. "Implementar modulo de pesaje", "Firmar contrato con Javier", "Investigar painpoints de papas". Todo es una task. El contexto se acumula en los comentarios de la task.
+### TaskType
+Template para tipos de tarea recurrentes. Define instrucciones (texto que el agente lee), herramientas disponibles, y estructura esperada. Se crea cuando Angel identifica un patron. Ejemplo: "Scraping de sitio", "Ilustrar estilo Tintin", "Reporte de analytics".
 
-### Comentarios
+### Document
+Entidad separada asociada al Space. Puede vincularse a multiples tasks via TaskDocument. Por ahora almacena URL/referencia. Futuro: storage real (S3, Drive).
 
-Cada task tiene comentarios. Un comentario puede tener adjuntos (archivos, imagenes, PDFs). Los comentarios son el historial vivo de la task — decisiones, avances, bloqueos.
+### Comment
+Texto asociado a una task. Autor puede ser humano o agente. Historial vivo de la task.
 
-### Contactos
-
-Se asocian al **Space**, no a tasks individuales. Son personas relevantes para ese proyecto. No tienen acceso — son datos de referencia para cuando agentes IA operen el space a traves de MCPs futuros.
-
-### Recurrencia
-
-No existe dentro de Abeja. La recurrencia pertenece al producto cuando se construye. "Generar reporte de analytics semanal" es un cron de Vecino desplegado, no una task recurrente en Abeja.
-
----
-
-## Spaces actuales
-
-Cada space es un proyecto real. Abeja los observa — no los contiene.
-
-| Space | Repo | Que es | Sombrero |
-|-------|------|--------|----------|
-| Pajarillo | `~/Vacamorada` | Gestion ganadera. Finca en los Llanos. | Ganadero |
-| Finca Legal | — | Contratos, impuestos, avaluos, propiedad | Legal/admin |
-| Vecino | `~/Desktop/vecino` | Plataforma de noticias para comunidades | Editor/producto |
-| La Malandra | `~/lamalandra` | Sitio de noticias neobrutalist | Editorial |
-| Republica Malandra | `~/republicamalandraboard` | Dashboard del universo Malandra | Creativo |
-| Manas y Malandros | `~/Malandros_Tablero` | Juego de cartas online | Game design |
-| Canticuento | — | Cuentos para ninos, plataforma editorial | Creativo |
-| Govtech / MiPQRSD | `~/pqrds_analyzer_2026` | Analisis de peticiones ciudadanas | Govtech |
-| Personal | — | Crecimiento, maximas, blog (privado) | Personal |
-| Familia | — | Hijos, hogar | Personal |
-| Abeja | `~/abeja` | Este tablero de control | Meta |
-| Sandbox | — | Ideas sueltas sin space definido | Libre |
+### Contact
+Asociado al Space. Datos de referencia para agentes. No implica acceso.
 
 ---
 
-## Monetizacion
+## Domains y Spaces actuales
 
-Dos vias:
-
-1. **Los productos** — Pajarillo, Vecino, MiPQRSD, etc. Cada uno genera valor propio.
-2. **La fabrica** — El proceso de ir de idea a producto desplegado. Lo que Designo hacia con 20 personas, ahora comprimido con IA. Es un servicio o producto en si mismo.
-
-Abeja soporta ambas vias: rastrea el estado de los productos (via 1) y del proceso de construccion (via 2).
+| Domain | Space | Repo | Que es |
+|--------|-------|------|--------|
+| Finca | Pajarillo | `~/Vacamorada` | Gestion ganadera |
+| Finca | Finca Legal | — | Contratos, impuestos, propiedad |
+| Media | Vecino | `~/Desktop/vecino` | Noticias para comunidades |
+| Media | La Malandra | `~/lamalandra` | Noticias neobrutalist |
+| Media | Republica Malandra | `~/republicamalandraboard` | Dashboard Malandra |
+| Media | Manas y Malandros | `~/Malandros_Tablero` | Juego de cartas online |
+| Media | Canticuento | — | Cuentos para ninos |
+| Govtech | MiPQRSD | `~/pqrds_analyzer_2026` | Analisis de peticiones ciudadanas |
+| Personal | Personal | — | Crecimiento, maximas, blog |
+| Personal | Familia | — | Hijos, hogar |
+| Abeja | Abeja | `~/abeja` | Este sistema |
+| Abeja | Sandbox | — | Ideas sueltas |
 
 ---
 
-## Captura
+## Captura y MCP
 
 ### Momento de captura
 
-Angel camina, piensa, y envia mensajes con lo que se le ocurre. No quiere abrir una app, no quiere elegir un space, no quiere clasificar nada. Solo escribe y sigue caminando.
+Angel camina, piensa, envia mensajes. No clasifica nada. El agente resuelve donde va.
 
-### Flujo: agente + MCP
-
-La inteligencia de clasificar no vive en Abeja — vive en un agente IA (Claude u otro) que tiene acceso a Abeja via MCP.
+### Flujo
 
 ```
-Angel (WhatsApp) → Agente IA → MCP de Abeja → Accion correcta
+Angel (WhatsApp) → Agente IA (OpenClaw) → MCP de Abeja → Accion correcta
 ```
-
-El agente conoce los spaces, ve las tasks existentes, y decide: "esto es un comentario en la task 'Contrato con Javier' del space Finca Legal" o "esto es una task nueva para Pajarillo". Angel no clasifica — el agente lo resuelve.
 
 ### Operaciones del MCP
 
-Abeja expone CRUD puro. La inteligencia la pone el agente.
+Abeja expone CRUD puro via MCP (Model Context Protocol). La inteligencia la pone el agente.
 
-- `list_spaces` — ver todos los spaces
-- `list_tasks(space)` — ver tasks de un space
-- `create_task(space, body)` — crear task nueva
-- `add_comment(task, body, attachments?)` — agregar comentario con adjuntos opcionales
-- `add_contact(space, name, info)` — agregar persona al space
-- `update_task(task, status)` — marcar como done, reabrir, etc.
+- `list_domains` — ver dominios con sus spaces
+- `list_spaces(domain?)` — ver spaces, opcionalmente por domain
+- `list_tasks(space, status?)` — tasks de un space
+- `get_task(id)` — detalle con comentarios y documentos
+- `create_task(space, body, type?, assignee?)` — crear task
+- `update_task(id, status?, assignee?, type?)` — actualizar task
+- `add_comment(task_id, body, author?)` — agregar comentario
+- `add_document(space, name, url)` — agregar documento al space
+- `link_document(task_id, document_id)` — asociar documento a task
+- `list_contacts(space)` — contactos del space
+- `add_contact(space, name, role?, phone?, email?)` — agregar contacto
 
 ### Web
 
-Dashboard para visualizar y gestionar manualmente. Tiene formulario de captura como fallback. No es el canal principal — es para cuando Angel se sienta a revisar y decidir.
+Dashboard para visualizar y gestionar. Formulario de captura como fallback. No es el canal principal.
 
 ---
 
@@ -149,6 +136,7 @@ Dashboard para visualizar y gestionar manualmente. Tiene formulario de captura c
 | ORM | Prisma 6 |
 | UI | React 19 + Tailwind CSS 4 |
 | Auth | Cookie password (`abeja_auth`) |
+| MCP | `@modelcontextprotocol/sdk` (Node.js) |
 | Testing | Vitest + Testing Library |
 | Deploy | Vercel + Neon |
 
@@ -170,6 +158,8 @@ src/
 ├── components/    # Componentes reutilizables
 ├── lib/           # Utilidades (prisma client, auth, types)
 └── middleware.ts  # Auth gate
+
+mcp/               # MCP server standalone (Node.js)
 ```
 
 ### Patrones
@@ -187,76 +177,14 @@ src/
 2. **Rutas absolutas** en comandos de terminal
 3. **No inventar** — si falta info, preguntar
 4. **Simplicidad** — solucion simple antes que compleja
-5. **Un solo nivel** — no crear abstracciones innecesarias
-6. **Probar** que compila antes de reportar como terminado
-
----
-
-## Estado actual vs destino
-
-### Implementado
-- Auth por password (cookie + middleware)
-- Home: tasks abiertas agrupadas por space
-- Vistas de space con tabs (Tareas / Contexto)
-- Lista de capturas con filtros y detalle
-- Modal de captura nueva (space + body)
-- API: CRUD de capturas, dominios
-- Seed desde markdown
-
-### Pendiente (para alinear con esta vision)
-- [ ] Eliminar Domain como capa — solo Space → Task
-- [ ] Eliminar tipos de captura (fact, idea, referencia) — todo es Task
-- [ ] Comentarios en tasks (model existe, UI no)
-- [ ] Adjuntos en comentarios
-- [ ] Contactos por space
-- [ ] MCP con operaciones CRUD (list_spaces, create_task, add_comment, add_contact, update_task)
-- [ ] Deploy produccion en Neon + Vercel
-
-### Futuro (cuando madure)
-- [ ] Conectar agente IA (Claude) al MCP via WhatsApp
-- [ ] Hub por space (contexto completo para agentes operadores)
-- [ ] MCPs especializados por space (tools, docs, permisos)
-- [ ] Formalizacion de la fabrica como pipeline
-
----
-
-## Principios
-
-1. **Tablero, no herramienta** — ves, decides, y te vas a ejecutar a otro lado
-2. **Cambiar de interfaz = cambiar de sombrero** — cada modo tiene su lugar
-3. **Un solo nivel** — Space → Task, sin jerarquias
-4. **Captura via conversacion** — Angel escribe, el agente clasifica
-5. **Abeja es CRUD, el agente es inteligencia** — Abeja no clasifica, solo almacena y muestra
-6. **Todo tiende a delegacion** — cada space eventualmente se opera solo
-7. **Preguntar antes de actuar** — no inventar
-8. **100% valor capturado por Angel** — sin intermediarios
-
----
-
-## Organizacion de proyectos
-
-Los proyectos pueden vivir en una carpeta unificada. Mover carpetas no rompe nada — las rutas internas son relativas.
-
-```
-~/proyectos/
-  ├── abeja/
-  ├── vacamorada/
-  ├── vecino/
-  ├── lamalandra/
-  ├── republicamalandra/
-  ├── malandros-tablero/
-  ├── pqrsd-analyzer/
-  └── mapa-finca/
-```
-
-Al mover: abrir en Cursor desde la nueva ruta. Verificar `.env` si usa rutas absolutas. `npm install` si `node_modules` tiene links simbolicos a la ruta anterior.
+5. **Probar** que compila antes de reportar como terminado
 
 ---
 
 ## Setup de desarrollo
 
 ```bash
-cd ~/proyectos/abeja
+cd ~/abeja
 npm install
 
 # Base de datos local

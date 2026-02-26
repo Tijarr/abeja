@@ -7,26 +7,28 @@ export const dynamic = 'force-dynamic'
 export default async function SpacePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
 
-  const space = await prisma.space.findUnique({
+  const space = await prisma.space.findFirst({
     where: { slug },
     include: {
+      domain: true,
       tasks: { orderBy: { createdAt: 'desc' } },
-      _count: { select: { contacts: true } },
+      _count: { select: { contacts: true, documents: true } },
     },
   })
 
   if (!space) notFound()
 
-  const color = space.color || '#888'
+  const color = space.color || space.domain.color
   const openTasks = space.tasks.filter(t => t.status === 'open')
   const doneTasks = space.tasks.filter(t => t.status === 'done')
 
   return (
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-10 max-w-full">
-      <Link href="/" className="text-[12px] mb-4 inline-flex items-center gap-1 transition-opacity hover:opacity-70"
-        style={{ color: 'var(--text-tertiary)' }}>
-        ← Inicio
-      </Link>
+      <div className="flex items-center gap-2 mb-4 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
+        <Link href="/" className="transition-opacity hover:opacity-70">Inicio</Link>
+        <span>›</span>
+        <span style={{ color: space.domain.color }}>{space.domain.name}</span>
+      </div>
 
       <div className="flex items-center gap-2.5 mb-1">
         <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: color }} />
@@ -36,9 +38,9 @@ export default async function SpacePage({ params }: { params: Promise<{ slug: st
         <span className="text-[12px]" style={{ color: 'var(--accent)' }}>{openTasks.length} abiertas</span>
         {doneTasks.length > 0 && <span className="text-[12px]">{doneTasks.length} completadas</span>}
         {space._count.contacts > 0 && <span className="text-[12px]">{space._count.contacts} contactos</span>}
+        {space._count.documents > 0 && <span className="text-[12px]">{space._count.documents} documentos</span>}
       </div>
 
-      {/* Open tasks */}
       <div className="mb-8">
         {openTasks.map(t => (
           <Link key={t.id} href={`/task/${t.id}`}
@@ -50,6 +52,17 @@ export default async function SpacePage({ params }: { params: Promise<{ slug: st
                 {t.title || t.body}
               </p>
               <div className="flex flex-wrap items-center gap-2 mt-1">
+                {t.type !== 'normal' && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded"
+                    style={{ background: 'rgba(232,171,94,0.12)', color: 'var(--accent)' }}>
+                    {t.type}
+                  </span>
+                )}
+                {t.assignee && (
+                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                    → {t.assignee}
+                  </span>
+                )}
                 {t.deadline && (
                   <span className="text-[11px]" style={{ color: 'var(--accent)' }}>
                     {new Date(t.deadline).toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
@@ -70,7 +83,6 @@ export default async function SpacePage({ params }: { params: Promise<{ slug: st
         ))}
       </div>
 
-      {/* Done tasks */}
       {doneTasks.length > 0 && (
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"

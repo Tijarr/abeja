@@ -20,6 +20,16 @@ export function SidebarNavItem({ href, children }: { href: string; children: Rea
   )
 }
 
+export function SidebarDomainLabel({ name, color }: { name: string; color: string }) {
+  return (
+    <p className="px-2 mb-1.5 mt-1 text-[10px] font-semibold uppercase tracking-widest flex items-center gap-1.5"
+      style={{ color }}>
+      <span className="w-1 h-1 rounded-full" style={{ background: color, opacity: 0.6 }} />
+      {name}
+    </p>
+  )
+}
+
 export function SidebarSpaceLink({ href, count, name, color }: { href: string; count: number; name: string; color: string }) {
   const pathname = usePathname()
   const isActive = pathname === href

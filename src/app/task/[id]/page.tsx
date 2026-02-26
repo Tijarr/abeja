@@ -14,21 +14,23 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
   const task = await prisma.task.findUnique({
     where: { id: numId },
     include: {
-      space: { include: { contacts: true } },
+      space: { include: { domain: true, contacts: true } },
       comments: { orderBy: { createdAt: 'asc' } },
+      documents: { include: { document: true } },
     },
   })
 
   if (!task) notFound()
 
-  const color = task.space.color || '#888'
+  const color = task.space.color || task.space.domain.color
   const isDone = task.status === 'done'
 
   return (
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-16 max-w-2xl">
-      {/* Breadcrumb */}
       <div className="flex items-center gap-2 mb-5 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
         <Link href="/" className="transition-opacity hover:opacity-70">Inicio</Link>
+        <span>›</span>
+        <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
         <span>›</span>
         <Link href={`/space/${task.space.slug}`}
           className="transition-opacity hover:opacity-70" style={{ color }}>
@@ -36,17 +38,14 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </Link>
       </div>
 
-      {/* Actions bar */}
       <TaskActions taskId={task.id} status={task.status || 'open'} spaceName={task.space.name} />
 
-      {/* Title */}
       {task.title && task.title !== task.body?.slice(0, 80) && (
         <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight mb-4 leading-snug">
           {task.title}
         </h1>
       )}
 
-      {/* Body */}
       <div className="mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
         <p className="text-[14px] leading-relaxed whitespace-pre-wrap"
           style={{ color: isDone ? 'var(--text-secondary)' : 'var(--text)' }}>
@@ -54,8 +53,11 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </p>
       </div>
 
-      {/* Metadata */}
       <div className="space-y-3 mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+        <MetaRow label="Dominio">
+          <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
+        </MetaRow>
+
         <MetaRow label="Espacio">
           <Link href={`/space/${task.space.slug}`}
             className="transition-opacity hover:opacity-70 flex items-center gap-1.5" style={{ color }}>
@@ -69,6 +71,18 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
             {isDone ? 'Completada' : 'Abierta'}
           </span>
         </MetaRow>
+
+        <MetaRow label="Tipo">
+          <span style={{ color: task.type !== 'normal' ? 'var(--accent)' : 'var(--text-secondary)' }}>
+            {task.type}
+          </span>
+        </MetaRow>
+
+        {task.assignee && (
+          <MetaRow label="Responsable">
+            <span style={{ color: 'var(--text-secondary)' }}>{task.assignee}</span>
+          </MetaRow>
+        )}
 
         <MetaRow label="Creada">
           <span style={{ color: 'var(--text-secondary)' }}>
@@ -112,6 +126,36 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         )}
       </div>
 
+      {/* Documents */}
+      {task.documents.length > 0 && (
+        <div className="mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"
+            style={{ color: 'var(--text-tertiary)' }}>
+            Documentos ({task.documents.length})
+          </p>
+          <div className="space-y-2">
+            {task.documents.map(td => (
+              <div key={td.document.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
+                style={{ background: 'var(--surface)' }}>
+                <span className="text-[13px]" style={{ color: 'var(--text)' }}>{td.document.name}</span>
+                {td.document.url && (
+                  <a href={td.document.url} target="_blank" rel="noopener noreferrer"
+                    className="text-[11px] ml-auto transition-opacity hover:opacity-70"
+                    style={{ color: 'var(--accent)' }}>
+                    Abrir
+                  </a>
+                )}
+                {td.document.mimeType && (
+                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
+                    {td.document.mimeType}
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Comments */}
       <div className="mb-8">
         <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"
@@ -148,7 +192,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         <AddComment taskId={task.id} />
       </div>
 
-      {/* Contacts del space */}
+      {/* Contacts */}
       {task.space.contacts.length > 0 && (
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"

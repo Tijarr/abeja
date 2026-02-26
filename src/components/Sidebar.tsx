@@ -1,10 +1,15 @@
 import { prisma } from '@/lib/prisma'
-import { SidebarNavItem, SidebarSpaceLink } from './SidebarLink'
+import { SidebarNavItem, SidebarSpaceLink, SidebarDomainLabel } from './SidebarLink'
 
 export default async function Sidebar() {
-  const spaces = await prisma.space.findMany({
-    include: { _count: { select: { tasks: { where: { status: 'open' } } } } },
+  const domains = await prisma.domain.findMany({
     orderBy: { sortOrder: 'asc' },
+    include: {
+      spaces: {
+        orderBy: { sortOrder: 'asc' },
+        include: { _count: { select: { tasks: { where: { status: 'open' } } } } },
+      },
+    },
   })
 
   return (
@@ -23,21 +28,26 @@ export default async function Sidebar() {
           <SidebarNavItem href="/tasks">Tareas</SidebarNavItem>
         </div>
 
-        <p className="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest"
-          style={{ color: 'var(--text-tertiary)' }}>
-          Espacios
-        </p>
-        <div className="space-y-0.5">
-          {spaces.filter(s => s._count.tasks > 0).map(space => (
-            <SidebarSpaceLink
-              key={space.id}
-              href={`/space/${space.slug}`}
-              count={space._count.tasks}
-              name={space.name}
-              color={space.color || '#888'}
-            />
-          ))}
-        </div>
+        {domains.map(domain => {
+          const spacesWithTasks = domain.spaces.filter(s => s._count.tasks > 0)
+          if (spacesWithTasks.length === 0) return null
+          return (
+            <div key={domain.id} className="mb-3">
+              <SidebarDomainLabel name={domain.name} color={domain.color} />
+              <div className="space-y-0.5">
+                {spacesWithTasks.map(space => (
+                  <SidebarSpaceLink
+                    key={space.id}
+                    href={`/space/${space.slug}`}
+                    count={space._count.tasks}
+                    name={space.name}
+                    color={space.color || domain.color}
+                  />
+                ))}
+              </div>
+            </div>
+          )
+        })}
       </nav>
 
       <div className="px-3 py-3 shrink-0" style={{ borderTop: '1px solid var(--border)' }}>

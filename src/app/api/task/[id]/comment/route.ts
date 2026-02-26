@@ -8,7 +8,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     if (isNaN(taskId)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
 
     const data = await req.json()
-    const { body, author, authorType, attachments } = data
+    const { body, author, authorType } = data
 
     if (!body) return NextResponse.json({ error: 'body required' }, { status: 400 })
 
@@ -18,7 +18,6 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
         body,
         author: author || 'angel',
         authorType: authorType || 'human',
-        attachments: attachments || null,
       },
     })
 
