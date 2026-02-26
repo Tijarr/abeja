@@ -93,19 +93,19 @@ export default async function HomePage() {
                   <div>
                     {space.tasks.map(t => (
                       <Link key={t.id} href={`/task/${t.id}`}
-                        className="group flex items-center gap-2 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
-                        <StatusIcon done={false} />
-                        <span className="text-[13px] flex-1" style={{ color: 'var(--text)' }}>
+                        className="group flex items-start gap-2 py-2 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
+                        <span className="mt-[3px] shrink-0"><StatusIcon done={false} /></span>
+                        <span className="text-[13px] flex-1 min-w-0" style={{ color: 'var(--text)' }}>
                           {t.title || t.body}
                         </span>
                         {t.type !== 'normal' && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
+                          <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0 mt-[2px]"
                             style={{ background: 'rgba(200,241,53,0.1)', color: 'var(--accent)' }}>
                             {t.type}
                           </span>
                         )}
-                        {t.assignee && <Initials name={t.assignee} />}
-                        <span className="text-[11px] font-mono shrink-0"
+                        {t.assignee && <span className="mt-[1px]"><Initials name={t.assignee} /></span>}
+                        <span className="text-[11px] font-mono shrink-0 mt-[2px]"
                           style={{ color: 'var(--text-tertiary)' }}>
                           {t.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
                         </span>
