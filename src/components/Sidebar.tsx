@@ -14,7 +14,7 @@ export default async function Sidebar() {
 
   return (
     <aside
-      className="w-full md:w-[240px] shrink-0 flex flex-col h-screen overflow-y-auto"
+      className="w-full md:w-[220px] shrink-0 flex flex-col h-screen overflow-y-auto"
       style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}
     >
       <div className="px-4 py-3 flex items-center shrink-0"
