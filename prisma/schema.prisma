@@ -8,25 +8,27 @@ datasource db {
 }
 
 model Domain {
-  id        Int     @id @default(autoincrement())
-  name      String
-  slug      String  @unique
-  color     String  @default("#8b9ab0")
-  sortOrder Int     @default(0)
-  spaces    Space[]
+  id          Int     @id @default(autoincrement())
+  name        String
+  slug        String  @unique
+  color       String  @default("#8b9ab0")
+  sortOrder   Int     @default(0)
+  description String?
+  spaces      Space[]
 }
 
 model Space {
-  id        Int        @id @default(autoincrement())
-  name      String
-  slug      String
-  color     String?    @default("#8b9ab0")
-  sortOrder Int?       @default(0)
-  domainId  Int
-  contacts  Contact[]
-  documents Document[]
-  domain    Domain     @relation(fields: [domainId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tasks     Task[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  slug        String
+  color       String?    @default("#8b9ab0")
+  sortOrder   Int?       @default(0)
+  domainId    Int
+  description String?
+  contacts    Contact[]
+  documents   Document[]
+  domain      Domain     @relation(fields: [domainId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  tasks       Task[]
 
   @@unique([domainId, slug])
 }
@@ -102,4 +104,14 @@ model Contact {
   notes     String?
   createdAt DateTime? @default(now())
   space     Space     @relation(fields: [spaceId], references: [id])
+}
+
+model SlugRedirect {
+  id        Int      @id @default(autoincrement())
+  oldSlug   String
+  newSlug   String
+  type      String
+  createdAt DateTime @default(now())
+
+  @@index([oldSlug, type])
 }

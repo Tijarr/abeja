@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
+import { resolveSlug } from '@/lib/slug-redirect'
 import Link from 'next/link'
 
 export const dynamic = 'force-dynamic'
@@ -16,7 +17,11 @@ export default async function SpacePage({ params }: { params: Promise<{ slug: st
     },
   })
 
-  if (!space) notFound()
+  if (!space) {
+    const resolved = await resolveSlug(slug, 'space')
+    if (resolved) redirect(`/space/${resolved}`)
+    notFound()
+  }
 
   const color = space.color || space.domain.color
   const openTasks = space.tasks.filter(t => t.status === 'open')
