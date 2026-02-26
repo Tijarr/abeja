@@ -117,11 +117,7 @@ export default async function TasksPage({ searchParams }: { searchParams: Promis
             <Link key={t.id} href={`/task/${t.id}`}
               className="group flex items-center gap-2 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
               <StatusIcon done={done} />
-              <span className="text-[11px] font-mono shrink-0 w-[52px]"
-                style={{ color: 'var(--text-tertiary)' }}>
-                ABJ-{t.id}
-              </span>
-              <span className="text-[13px] truncate flex-1"
+              <span className="text-[13px] flex-1"
                 style={{ color: done ? 'var(--text-tertiary)' : 'var(--text)' }}>
                 {t.title || t.body}
               </span>

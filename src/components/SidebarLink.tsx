@@ -86,7 +86,7 @@ export function SidebarSpaceLink({ href, count, name, color, slug }: {
           background: isActive ? 'var(--surface-hover)' : undefined,
         }}
       >
-        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
+        <HexIcon color={color} />
         <span className="flex-1 truncate">{name}</span>
         <span className="text-[11px] shrink-0 tabular-nums" style={{ color: 'var(--text-tertiary)' }}>{count}</span>
       </Link>
@@ -96,6 +96,14 @@ export function SidebarSpaceLink({ href, count, name, color, slug }: {
         <EditIcon />
       </Link>
     </div>
+  )
+}
+
+function HexIcon({ color, size = 14 }: { color: string; size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 14 14" fill="none" className="shrink-0">
+      <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1.3" strokeLinejoin="round" />
+    </svg>
   )
 }
 

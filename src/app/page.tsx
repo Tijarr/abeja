@@ -79,7 +79,9 @@ export default async function HomePage() {
                 <div key={space.id} className="mb-2">
                   <Link href={`/space/${space.slug}`}
                     className="flex items-center gap-2 h-6 px-2 pl-6 transition-opacity hover:opacity-70">
-                    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: color }} />
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
+                      <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1.3" strokeLinejoin="round" />
+                    </svg>
                     <span className="text-[11px] font-medium" style={{ color: 'var(--text-secondary)' }}>
                       {space.name}
                     </span>
@@ -93,11 +95,7 @@ export default async function HomePage() {
                       <Link key={t.id} href={`/task/${t.id}`}
                         className="group flex items-center gap-2 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
                         <StatusIcon done={false} />
-                        <span className="text-[11px] font-mono shrink-0 w-[52px]"
-                          style={{ color: 'var(--text-tertiary)' }}>
-                          ABJ-{t.id}
-                        </span>
-                        <span className="text-[13px] truncate flex-1" style={{ color: 'var(--text)' }}>
+                        <span className="text-[13px] flex-1" style={{ color: 'var(--text)' }}>
                           {t.title || t.body}
                         </span>
                         {t.type !== 'normal' && (

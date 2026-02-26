@@ -69,7 +69,9 @@ export default async function SpacePage({ params, searchParams }: {
       </div>
 
       <div className="flex items-center gap-2.5 mb-1">
-        <span className="w-2 h-2 rounded-full shrink-0" style={{ background: color }} />
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" className="shrink-0">
+          <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1.3" strokeLinejoin="round" />
+        </svg>
         <h1 className="text-[16px] font-semibold" style={{ color: 'var(--text)' }}>{space.name}</h1>
         <span className="text-[12px] font-mono" style={{ color: 'var(--text-tertiary)' }}>
           {openTasks.length}
@@ -109,11 +111,7 @@ export default async function SpacePage({ params, searchParams }: {
             <Link key={t.id} href={`/task/${t.id}`}
               className="group flex items-center gap-2 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
               <StatusIcon done={done} />
-              <span className="text-[11px] font-mono shrink-0 w-[52px]"
-                style={{ color: 'var(--text-tertiary)' }}>
-                ABJ-{t.id}
-              </span>
-              <span className="text-[13px] truncate flex-1"
+              <span className="text-[13px] flex-1"
                 style={{ color: done ? 'var(--text-tertiary)' : 'var(--text)' }}>
                 {t.title || t.body}
               </span>
