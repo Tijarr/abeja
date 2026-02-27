@@ -90,13 +90,23 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           </span>
         </MetaRow>
 
-        {task.deadline && (
-          <MetaRow label="Fecha limite">
-            <span style={{ color: 'var(--accent)' }}>
-              {new Date(task.deadline).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
-            </span>
-          </MetaRow>
-        )}
+        {task.deadline && (() => {
+          const dl = new Date(task.deadline)
+          const now = new Date()
+          const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          const dlDay = new Date(dl.getFullYear(), dl.getMonth(), dl.getDate())
+          const isOverdue = !isDone && dlDay < today
+          const isToday = dlDay.getTime() === today.getTime()
+          return (
+            <MetaRow label="Fecha limite">
+              <span style={{ color: isOverdue ? '#d4636c' : isToday ? 'var(--accent)' : 'var(--text-secondary)' }}>
+                {dl.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
+                {isOverdue && ' (vencida)'}
+                {isToday && !isDone && ' (hoy)'}
+              </span>
+            </MetaRow>
+          )
+        })()}
 
         {task.completedAt && (
           <MetaRow label="Completada">

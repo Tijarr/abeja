@@ -1,34 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import TaskRow from '@/components/TaskRow'
 
 export const dynamic = 'force-dynamic'
-
-function StatusIcon({ done }: { done: boolean }) {
-  if (done) return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0" style={{ color: 'var(--text-tertiary)' }}>
-      <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3" />
-      <path d="M4.5 7l2 2 3-3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0" style={{ color: 'var(--text-tertiary)' }}>
-      <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.3" />
-    </svg>
-  )
-}
-
-function Initials({ name }: { name: string }) {
-  const parts = name.trim().split(/\s+/)
-  const letters = parts.length > 1
-    ? (parts[0][0] + parts[1][0]).toUpperCase()
-    : name.slice(0, 2).toUpperCase()
-  return (
-    <span className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-medium shrink-0"
-      style={{ background: 'var(--accent-dim, rgba(200,241,53,0.1))', color: 'var(--accent)' }}>
-      {letters}
-    </span>
-  )
-}
 
 export default async function HomePage() {
   const domains = await prisma.domain.findMany({
@@ -51,21 +25,60 @@ export default async function HomePage() {
 
   return (
     <div className="px-4 md:px-8 pb-10">
-      <div className="h-[52px] flex items-center gap-3">
-        <h1 className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>Tareas</h1>
-        <span className="text-[12px] font-mono" style={{ color: 'var(--text-tertiary)' }}>{totalOpen}</span>
+      <div className="h-[52px] flex items-center gap-2.5">
+        <span className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>Tareas</span>
+        <span className="text-xs font-mono" style={{ color: 'var(--text-tertiary)' }}>{totalOpen}</span>
       </div>
+
+      <form action="/tasks" method="GET" className="mb-4">
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          background: 'var(--surface)',
+          border: '1px solid var(--border)',
+          borderRadius: '6px',
+          padding: '0 10px',
+          maxWidth: '320px',
+        }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--text-tertiary)' }}>
+            <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.3" />
+            <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+          </svg>
+          <input
+            name="q"
+            type="text"
+            placeholder="Buscar tareas..."
+            style={{
+              flex: 1,
+              height: '32px',
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              fontSize: '13px',
+              color: 'var(--text)',
+            }}
+          />
+        </div>
+      </form>
 
       {domains.map(domain => {
         const domainTasks = domain.spaces.flatMap(s => s.tasks)
         if (domainTasks.length === 0) return null
 
         return (
-          <div key={domain.id} className="mb-6">
-            <div className="flex items-center gap-2 h-8 mb-0.5">
-              <span className="w-2 h-2 rounded-full shrink-0" style={{ background: domain.color }} />
-              <span className="text-[11px] font-semibold uppercase tracking-widest"
-                style={{ color: 'var(--text-secondary)' }}>
+          <div key={domain.id} className="mb-4">
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '8px 12px',
+              background: 'var(--surface)',
+              borderRadius: '6px',
+              marginBottom: '8px',
+            }}>
+              <span className="shrink-0 rounded-full" style={{ width: 7, height: 7, background: domain.color }} />
+              <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
                 {domain.name}
               </span>
               <span className="text-[11px] font-mono" style={{ color: 'var(--text-tertiary)' }}>
@@ -76,13 +89,13 @@ export default async function HomePage() {
             {domain.spaces.filter(s => s.tasks.length > 0).map(space => {
               const color = space.color || domain.color
               return (
-                <div key={space.id} className="mb-3">
+                <div key={space.id} className="mb-2">
                   <Link href={`/space/${space.slug}`}
-                    className="flex items-center gap-2 h-7 pl-4 pr-2 transition-opacity hover:opacity-70">
+                    className="flex items-center gap-2 h-7 pl-6 no-underline">
                     <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="shrink-0">
                       <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1" strokeLinejoin="round" />
                     </svg>
-                    <span className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>
+                    <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
                       {space.name}
                     </span>
                     <span className="text-[11px] font-mono" style={{ color: 'var(--text-tertiary)' }}>
@@ -92,24 +105,17 @@ export default async function HomePage() {
 
                   <div className="pl-4">
                     {space.tasks.map(t => (
-                      <Link key={t.id} href={`/task/${t.id}`}
-                        className="group flex items-center gap-2.5 h-9 px-2 rounded-sm transition-colors hover:bg-[var(--surface-hover)]">
-                        <StatusIcon done={false} />
-                        <span className="text-[14px] truncate flex-1 min-w-0" style={{ color: 'var(--text)' }}>
-                          {t.title || t.body}
-                        </span>
-                        {t.type !== 'normal' && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded shrink-0"
-                            style={{ background: 'rgba(200,241,53,0.08)', color: 'var(--accent)' }}>
-                            {t.type}
-                          </span>
-                        )}
-                        {t.assignee && <Initials name={t.assignee} />}
-                        <span className="text-[11px] font-mono shrink-0"
-                          style={{ color: 'var(--text-tertiary)' }}>
-                          {t.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' })}
-                        </span>
-                      </Link>
+                      <TaskRow
+                        key={t.id}
+                        id={t.id}
+                        title={t.title || t.body}
+                        assignee={t.assignee}
+                        date={t.createdAt}
+                        type={t.type}
+                        tags={t.tags}
+                        deadline={t.deadline}
+                        spaceColor={color}
+                      />
                     ))}
                   </div>
                 </div>

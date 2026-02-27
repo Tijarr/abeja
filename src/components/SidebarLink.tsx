@@ -76,22 +76,35 @@ export function SidebarSpaceLink({ href, count, name, color, slug }: {
   const pathname = usePathname()
   const isActive = pathname === href
   return (
-    <div className="group flex items-center">
+    <div className="group" style={{ display: 'flex', alignItems: 'center' }}>
       <Link
         href={href}
-        className="flex-1 flex items-center gap-2 pl-5 pr-1 py-1 rounded-md text-[13px] transition-colors hover:bg-[var(--surface-hover)]"
         style={{
+          flex: 1,
+          minWidth: 0,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          paddingLeft: 20,
+          paddingRight: 4,
+          paddingTop: 4,
+          paddingBottom: 4,
+          borderRadius: 6,
+          fontSize: 13,
+          textDecoration: 'none',
           color: isActive ? 'var(--text)' : 'var(--text-secondary)',
           fontWeight: isActive ? 500 : 400,
           background: isActive ? 'var(--surface-hover)' : undefined,
         }}
+        className="hover:bg-[var(--surface-hover)]"
       >
         <HexIcon color={color} />
-        <span className="flex-1 truncate">{name}</span>
-        <span className="text-[11px] w-[28px] text-right shrink-0 tabular-nums" style={{ color: 'var(--text-tertiary)' }}>{count}</span>
+        <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</span>
+        <span style={{ fontSize: 11, minWidth: 20, textAlign: 'right', flexShrink: 0, fontVariantNumeric: 'tabular-nums', color: 'var(--text-tertiary)' }}>{count}</span>
       </Link>
       <Link href={`/space/${slug}/edit`}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 mr-1 rounded hover:bg-[var(--border)]"
+        className="opacity-0 group-hover:opacity-100 transition-opacity"
+        style={{ padding: 2, marginRight: 4, borderRadius: 4 }}
         title="Editar espacio">
         <EditIcon />
       </Link>

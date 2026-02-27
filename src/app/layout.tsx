@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import NewCaptureModal from '@/components/NewCaptureModal'
-import Sidebar from '@/components/Sidebar'
-import MobileMenuDrawer from '@/components/MobileMenuDrawer'
+import AppShell from '@/components/AppShell'
 import FAB from '@/components/FAB'
 import { isAuthenticated } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,26 +27,37 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     )
   }
 
+  const domains = await prisma.domain.findMany({
+    orderBy: { sortOrder: 'asc' },
+    include: {
+      spaces: {
+        orderBy: { sortOrder: 'asc' },
+        include: { _count: { select: { tasks: { where: { status: 'open' } } } } },
+      },
+    },
+  })
+
+  const sidebarData = domains.map(d => ({
+    id: d.id,
+    name: d.name,
+    slug: d.slug,
+    color: d.color,
+    spaces: d.spaces.map(s => ({
+      id: s.id,
+      name: s.name,
+      slug: s.slug,
+      color: s.color,
+      _count: { tasks: s._count.tasks },
+    })),
+  }))
+
   return (
     <html lang="es">
       <body className={inter.className} style={{ background: 'var(--bg)', color: 'var(--text)' }}>
-        <div className="flex h-screen overflow-hidden">
-          {/* Sidebar — desktop only */}
-          <div className="hidden md:flex md:shrink-0" suppressHydrationWarning>
-            <Sidebar />
-          </div>
-          {/* Main area */}
-          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-            {/* Mobile: header + hamburger drawer con sidebar completo */}
-            <MobileMenuDrawer>
-              <Sidebar />
-            </MobileMenuDrawer>
-            <main className="flex-1 overflow-y-auto overflow-x-hidden">
-              {children}
-              <FAB />
-            </main>
-          </div>
-        </div>
+        <AppShell domains={sidebarData}>
+          {children}
+          <FAB />
+        </AppShell>
         <NewCaptureModal />
       </body>
     </html>
