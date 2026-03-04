@@ -24,7 +24,7 @@ export default async function InboxPage() {
   ])
 
   return (
-    <div className="px-4 md:px-8 pb-10">
+    <div className="px-4 md:px-8 pb-10 max-w-5xl">
       {/* Header */}
       <div className="h-[52px] flex items-center gap-2">
         <span className="text-[15px] font-semibold text-foreground">Inbox</span>
