@@ -35,7 +35,7 @@ export default function TaskRow({
     >
       <PriorityDiamond priority={priority} />
       <span className={cn(
-        'text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap',
+        'flex-1 min-w-0 text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap',
         done ? 'text-muted-foreground' : 'text-foreground',
       )}>
         {title}
