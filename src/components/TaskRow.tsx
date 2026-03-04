@@ -18,7 +18,6 @@ export default function TaskRow({
   id,
   title,
   priority = 'normal',
-  assignee,
   done = false,
 }: {
   id: number
@@ -32,26 +31,15 @@ export default function TaskRow({
   return (
     <Link
       href={`/task/${id}`}
-      className="block w-full rounded-sm hover:bg-secondary"
+      className="group flex items-center gap-3 w-full py-2.5 rounded-md hover:bg-secondary transition-colors"
     >
-      <div className="flex items-center gap-2.5 h-10 px-2">
-        <PriorityDiamond priority={priority} />
-
-        {/* Title */}
-        <span className={cn(
-          'flex-1 min-w-0 truncate text-sm font-semibold',
-          done ? 'text-muted-foreground' : 'text-foreground',
-        )}>
-          {title}
-        </span>
-
-        {/* Assignee */}
-        {assignee && (
-          <span className="hidden md:inline-block text-right text-xs text-muted-foreground shrink-0 truncate max-w-[130px]">
-            {assignee}
-          </span>
-        )}
-      </div>
+      <PriorityDiamond priority={priority} />
+      <span className={cn(
+        'text-sm font-medium overflow-hidden text-ellipsis whitespace-nowrap',
+        done ? 'text-muted-foreground' : 'text-foreground',
+      )}>
+        {title}
+      </span>
     </Link>
   )
 }

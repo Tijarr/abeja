@@ -61,7 +61,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className={inter.className}>
         <SidebarProvider>
           <AppShell domains={sidebarData} inboxCount={inboxCount} />
-          <SidebarInset className="min-w-0 overflow-hidden">
+          <SidebarInset className="min-w-0">
             <header className="md:hidden flex h-12 shrink-0 items-center gap-2 border-b border-border bg-card px-4 pt-[max(0rem,env(safe-area-inset-top))]">
               <SidebarTrigger className="-ml-1 text-muted-foreground" />
               <span className="text-[15px] font-semibold tracking-tight text-primary">ABEJA.CO</span>
