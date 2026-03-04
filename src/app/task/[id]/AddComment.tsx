@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { Plus } from 'lucide-react'
+import { Plus, Loader2 } from 'lucide-react'
 
 export default function AddComment({ taskId }: { taskId: number }) {
   const router = useRouter()
@@ -68,7 +68,7 @@ export default function AddComment({ taskId }: { taskId: number }) {
           size="sm"
           disabled={loading || !body.trim()}
         >
-          {loading ? '...' : 'Comentar'}
+          {loading ? <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Enviando...</> : 'Comentar'}
         </Button>
       </div>
     </form>

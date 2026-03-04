@@ -14,9 +14,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
-import { Check, RotateCcw, Trash2 } from 'lucide-react'
+import { Check, RotateCcw, Trash2, Loader2 } from 'lucide-react'
 
-export default function TaskActions({ taskId, status }: { taskId: number; status: string; spaceName: string }) {
+export default function TaskActions({ taskId, status }: { taskId: number; status: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
 
@@ -48,11 +48,13 @@ export default function TaskActions({ taskId, status }: { taskId: number; status
         onClick={toggleStatus}
         disabled={loading === 'status'}
         className={isOpen
-          ? 'border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10'
+          ? 'border-primary/20 text-primary hover:bg-primary/10'
           : 'border-primary/20 text-primary hover:bg-primary/10'
         }
       >
-        {loading === 'status' ? '...' : isOpen ? (
+        {loading === 'status' ? (
+          <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Procesando...</>
+        ) : isOpen ? (
           <><Check className="h-3.5 w-3.5 mr-1" /> Completar</>
         ) : (
           <><RotateCcw className="h-3.5 w-3.5 mr-1" /> Reabrir</>
@@ -80,7 +82,9 @@ export default function TaskActions({ taskId, status }: { taskId: number; status
               disabled={loading === 'delete'}
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
             >
-              {loading === 'delete' ? '...' : 'Sí, eliminar'}
+              {loading === 'delete' ? (
+                <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Eliminando...</>
+              ) : 'Sí, eliminar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

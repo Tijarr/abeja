@@ -6,6 +6,7 @@ import AddComment from './AddComment'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -44,11 +45,11 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
               <Link href="/">Inicio</Link>
             </BreadcrumbLink>
           </BreadcrumbItem>
-          <BreadcrumbSeparator>›</BreadcrumbSeparator>
+          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
           </BreadcrumbItem>
-          <BreadcrumbSeparator>›</BreadcrumbSeparator>
+          <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbLink asChild>
               <Link href={`/space/${task.space.slug}`} style={{ color }}>
@@ -59,7 +60,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </BreadcrumbList>
       </Breadcrumb>
 
-      <TaskActions taskId={task.id} status={task.status || 'active'} spaceName={task.space.name} />
+      <TaskActions taskId={task.id} status={task.status || 'active'} />
 
       {task.title && task.title !== task.body?.slice(0, 80) && (
         <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight mb-4 leading-snug">
@@ -67,14 +68,15 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </h1>
       )}
 
-      <div className="mb-8 pb-6 border-b border-border">
-        <p className="text-sm leading-relaxed whitespace-pre-wrap"
-          style={{ color: isDone ? 'var(--muted-foreground)' : 'var(--foreground)' }}>
+      <div className="mb-8">
+        <p className={isDone ? 'text-sm leading-relaxed whitespace-pre-wrap text-muted-foreground' : 'text-sm leading-relaxed whitespace-pre-wrap text-foreground'}>
           {task.body}
         </p>
       </div>
 
-      <div className="space-y-3 mb-8 pb-6 border-b border-border">
+      <Separator className="mb-8" />
+
+      <div className="space-y-3 mb-8">
         <MetaRow label="Dominio">
           <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
         </MetaRow>
@@ -158,34 +160,38 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
       {/* Documents */}
       {task.documents.length > 0 && (
-        <div className="mb-8 pb-6 border-b border-border">
-          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
-            Documentos ({task.documents.length})
-          </p>
-          <div className="space-y-2">
-            {task.documents.map(td => (
-              <Card key={td.document.id}>
-                <CardContent className="flex items-center gap-3 px-3 py-2.5">
-                  <span className="text-[13px] text-foreground">{td.document.name}</span>
-                  {td.document.url && (
-                    <a href={td.document.url} target="_blank" rel="noopener noreferrer"
-                      className="text-[11px] ml-auto transition-opacity hover:opacity-70 text-primary">
-                      Abrir
-                    </a>
-                  )}
-                  {td.document.mimeType && (
-                    <span className="text-[10px] text-muted-foreground">
-                      {td.document.mimeType}
-                    </span>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+        <>
+          <Separator className="mb-8" />
+          <div className="mb-8">
+            <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
+              Documentos ({task.documents.length})
+            </p>
+            <div className="space-y-2">
+              {task.documents.map(td => (
+                <Card key={td.document.id}>
+                  <CardContent className="flex items-center gap-3 px-3 py-2.5">
+                    <span className="text-[13px] text-foreground">{td.document.name}</span>
+                    {td.document.url && (
+                      <a href={td.document.url} target="_blank" rel="noopener noreferrer"
+                        className="text-[11px] ml-auto transition-opacity hover:opacity-70 text-primary">
+                        Abrir
+                      </a>
+                    )}
+                    {td.document.mimeType && (
+                      <span className="text-[10px] text-muted-foreground">
+                        {td.document.mimeType}
+                      </span>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Comments */}
+      <Separator className="mb-8" />
       <div className="mb-8">
         <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
           Comentarios {task.comments.length > 0 && `(${task.comments.length})`}
@@ -223,31 +229,36 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
       {/* Contacts */}
       {task.space.contacts.length > 0 && (
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
-            Contactos de {task.space.name} ({task.space.contacts.length})
-          </p>
-          <div className="space-y-2">
-            {task.space.contacts.map(c => (
-              <Card key={c.id}>
-                <CardContent className="flex items-center gap-3 px-3 py-2.5">
-                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 bg-secondary text-muted-foreground">
-                    {c.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[13px] text-foreground">{c.name}</p>
-                    {c.role && <p className="text-[11px] text-muted-foreground">{c.role}</p>}
-                  </div>
-                  {c.phone && (
-                    <a href={`tel:${c.phone}`} className="text-[11px] transition-opacity hover:opacity-70 text-primary">
-                      {c.phone}
-                    </a>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+        <>
+          <Separator className="mb-8" />
+          <div>
+            <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
+              Contactos de {task.space.name} ({task.space.contacts.length})
+            </p>
+            <div className="space-y-2">
+              {task.space.contacts.map(c => (
+                <Card key={c.id}>
+                  <CardContent className="flex items-center gap-3 px-3 py-2.5">
+                    <Avatar size="sm">
+                      <AvatarFallback>
+                        {c.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[13px] text-foreground">{c.name}</p>
+                      {c.role && <p className="text-[11px] text-muted-foreground">{c.role}</p>}
+                    </div>
+                    {c.phone && (
+                      <a href={`tel:${c.phone}`} className="text-[11px] transition-opacity hover:opacity-70 text-primary">
+                        {c.phone}
+                      </a>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   )

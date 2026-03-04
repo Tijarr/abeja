@@ -9,6 +9,14 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Loader2 } from 'lucide-react'
 
 interface SpaceOption {
   slug: string
@@ -155,27 +163,29 @@ export default function NewCaptureModal() {
           <div className="flex gap-2 mb-3">
             <div className="flex-1">
               <Label className="text-[10px] mb-1 uppercase tracking-wider text-muted-foreground">Espacio</Label>
-              <select
-                value={space}
-                onChange={(e) => setSpace(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-md text-xs bg-card border border-border text-foreground outline-none"
-              >
-                {spaces.map((s) => (
-                  <option key={s.slug} value={s.slug}>{s.name}</option>
-                ))}
-              </select>
+              <Select value={space} onValueChange={setSpace}>
+                <SelectTrigger className="w-full text-xs h-8">
+                  <SelectValue placeholder="Seleccionar espacio" />
+                </SelectTrigger>
+                <SelectContent>
+                  {spaces.map((s) => (
+                    <SelectItem key={s.slug} value={s.slug}>{s.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="flex-1">
               <Label className="text-[10px] mb-1 uppercase tracking-wider text-muted-foreground">Tipo</Label>
-              <select
-                value={type}
-                onChange={(e) => setType(e.target.value)}
-                className="w-full px-2 py-1.5 rounded-md text-xs bg-card border border-border text-foreground outline-none"
-              >
-                {TASK_TYPES.map((t) => (
-                  <option key={t.value} value={t.value}>{t.label}</option>
-                ))}
-              </select>
+              <Select value={type} onValueChange={setType}>
+                <SelectTrigger className="w-full text-xs h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {TASK_TYPES.map((t) => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -245,7 +255,7 @@ export default function NewCaptureModal() {
               disabled={loading || !body.trim()}
               className="flex-1"
             >
-              {loading ? 'Guardando...' : 'Crear tarea'}
+              {loading ? <><Loader2 className="h-3.5 w-3.5 mr-1 animate-spin" /> Guardando...</> : 'Crear tarea'}
             </Button>
           </div>
 

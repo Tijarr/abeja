@@ -64,7 +64,7 @@ export default function DomainEditForm({ slug, name, description, color, spaceCo
             type="text"
             value={formName}
             onChange={e => setFormName(e.target.value)}
-            className="text-[22px] font-semibold tracking-tight bg-transparent outline-none w-full text-foreground"
+            className="text-[22px] font-semibold tracking-tight bg-transparent outline-none w-full text-foreground rounded-md focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background px-1 -ml-1"
             placeholder="Nombre del dominio"
           />
         </div>
@@ -142,7 +142,7 @@ export default function DomainEditForm({ slug, name, description, color, spaceCo
         {message && (
           <span className={cn(
             'text-xs',
-            message === 'Guardado' ? 'text-emerald-400' : 'text-destructive',
+            message === 'Guardado' ? 'text-primary' : 'text-destructive',
           )}>
             {message}
           </span>

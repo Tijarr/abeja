@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { PRIORITY_COLORS, type Priority } from '@/lib/types'
+import { Separator } from '@/components/ui/separator'
 
 function PriorityDiamond({ priority }: { priority: string }) {
   const color = PRIORITY_COLORS[priority as Priority] || PRIORITY_COLORS.normal
@@ -16,6 +17,10 @@ function PriorityDiamond({ priority }: { priority: string }) {
 
 function formatDate(date: Date): string {
   return date.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' }).replace('.', '')
+}
+
+function formatFullDate(date: Date): string {
+  return date.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 export default function TaskRow({
@@ -59,7 +64,7 @@ export default function TaskRow({
         </span>
 
         {/* Vertical separator */}
-        <span className="hidden md:inline-block w-px h-5 bg-border shrink-0" />
+        <Separator orientation="vertical" className="hidden md:block h-5" />
 
         {/* Title */}
         <span className={cn(
@@ -75,11 +80,14 @@ export default function TaskRow({
         </span>
 
         {/* Deadline */}
-        <span className={cn(
-          'w-[50px] text-right text-[11px] font-mono shrink-0',
-          deadlineColor,
-          deadline && !done && 'font-medium',
-        )}>
+        <span
+          className={cn(
+            'w-[50px] text-right text-[11px] font-mono shrink-0',
+            deadlineColor,
+            deadline && !done && 'font-medium',
+          )}
+          title={deadline ? formatFullDate(deadline) : undefined}
+        >
           {deadline ? formatDate(deadline) : ''}
         </span>
       </div>

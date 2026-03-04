@@ -6,7 +6,8 @@ import AppShell from '@/components/AppShell'
 import FAB from '@/components/FAB'
 import { isAuthenticated } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { TooltipProvider } from '@/components/ui/tooltip'
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import { SidebarTrigger } from '@/components/ui/sidebar'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -58,13 +59,20 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang="es">
       <body className={inter.className}>
-        <TooltipProvider>
-          <AppShell domains={sidebarData} inboxCount={inboxCount}>
-            {children}
-            <FAB />
-          </AppShell>
+        <SidebarProvider>
+          <AppShell domains={sidebarData} inboxCount={inboxCount} />
+          <SidebarInset>
+            <header className="md:hidden flex h-12 shrink-0 items-center gap-2 border-b border-border bg-card px-4 pt-[max(0rem,env(safe-area-inset-top))]">
+              <SidebarTrigger className="-ml-1 text-muted-foreground" />
+              <span className="text-[15px] font-semibold tracking-tight text-primary">ABEJA.CO</span>
+            </header>
+            <div className="flex-1 overflow-y-auto">
+              {children}
+              <FAB />
+            </div>
+          </SidebarInset>
           <NewCaptureModal />
-        </TooltipProvider>
+        </SidebarProvider>
       </body>
     </html>
   )
