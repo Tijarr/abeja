@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import { Plus } from 'lucide-react'
 
 export default function AddComment({ taskId }: { taskId: number }) {
   const router = useRouter()
@@ -26,52 +29,47 @@ export default function AddComment({ taskId }: { taskId: number }) {
 
   if (!isOpen) {
     return (
-      <button
+      <Button
+        variant="outline"
+        className="w-full justify-start text-muted-foreground border-dashed"
         onClick={() => setIsOpen(true)}
-        className="w-full px-3 py-2.5 rounded-lg text-[13px] text-left transition-colors hover:bg-[var(--surface-hover)]"
-        style={{ border: '1px dashed var(--border)', color: 'var(--text-tertiary)' }}
       >
-        + Agregar comentario...
-      </button>
+        <Plus className="h-3.5 w-3.5 mr-1" />
+        Agregar comentario...
+      </Button>
     )
   }
 
   return (
     <form onSubmit={handleSubmit}>
-      <textarea
+      <Textarea
         autoFocus
         value={body}
         onChange={(e) => setBody(e.target.value)}
         placeholder="Escribe un comentario..."
         rows={3}
-        className="w-full p-3 rounded-lg mb-2 resize-none text-[13px] outline-none"
-        style={{
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          color: 'var(--text)',
-        }}
+        className="mb-2 resize-none bg-card border-border text-[13px]"
         onKeyDown={(e) => {
           if (e.key === 'Escape') setIsOpen(false)
           if (e.ctrlKey && e.key === 'Enter') handleSubmit(e as unknown as React.FormEvent)
         }}
       />
       <div className="flex gap-2">
-        <button
+        <Button
           type="button"
+          variant="ghost"
+          size="sm"
           onClick={() => { setIsOpen(false); setBody('') }}
-          className="px-3 py-1.5 rounded-md text-[12px] transition-opacity hover:opacity-70"
-          style={{ color: 'var(--text-tertiary)' }}
         >
           Cancelar
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
+          size="sm"
           disabled={loading || !body.trim()}
-          className="px-3 py-1.5 rounded-md text-[12px] font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
-          style={{ background: 'var(--accent)', color: '#0a0a0a' }}
         >
           {loading ? '...' : 'Comentar'}
-        </button>
+        </Button>
       </div>
     </form>
   )

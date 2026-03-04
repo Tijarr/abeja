@@ -8,7 +8,7 @@ export async function GET() {
       include: {
         spaces: {
           orderBy: { sortOrder: 'asc' },
-          include: { _count: { select: { tasks: { where: { status: 'open' } } } } },
+          include: { _count: { select: { tasks: { where: { status: 'active' } } } } },
         },
       },
     })

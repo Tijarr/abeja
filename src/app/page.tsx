@@ -1,136 +1,108 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import TaskRow from '@/components/TaskRow'
+import { cn } from '@/lib/utils'
+import { MoreHorizontal, ChevronDown } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
 export const dynamic = 'force-dynamic'
 
-export default async function HomePage() {
-  const domains = await prisma.domain.findMany({
-    orderBy: { sortOrder: 'asc' },
-    include: {
-      spaces: {
-        orderBy: { sortOrder: 'asc' },
-        include: {
-          tasks: {
-            where: { status: 'open' },
-            orderBy: { createdAt: 'desc' },
-          },
-        },
-      },
-    },
-  })
+export default async function InboxPage({ searchParams }: { searchParams: Promise<{ tab?: string }> }) {
+  const { tab } = await searchParams
+  const activeTab = tab || 'active'
 
-  const totalOpen = domains.reduce((sum, d) =>
-    sum + d.spaces.reduce((s, sp) => s + sp.tasks.length, 0), 0)
+  const statusMap: Record<string, string> = {
+    active: 'active',
+    delegated: 'delegated',
+    done: 'done',
+  }
+  const statusFilter = statusMap[activeTab] || 'active'
+
+  const [tasks, activeCt, delegatedCt, doneCt] = await Promise.all([
+    prisma.task.findMany({
+      where: { status: statusFilter },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+    }),
+    prisma.task.count({ where: { status: 'active' } }),
+    prisma.task.count({ where: { status: 'delegated' } }),
+    prisma.task.count({ where: { status: 'done' } }),
+  ])
+
+  const tabLabel: Record<string, string> = {
+    active: 'Activas',
+    delegated: 'Delegadas',
+    done: 'Finalizadas',
+  }
 
   return (
     <div className="px-4 md:px-8 pb-10">
-      <div className="h-[52px] flex items-center gap-2.5">
-        <span className="text-[15px] font-semibold" style={{ color: 'var(--text)' }}>Tareas</span>
-        <span className="text-xs font-mono" style={{ color: 'var(--text-tertiary)' }}>{totalOpen}</span>
+      {/* Header */}
+      <div className="h-[52px] flex items-center gap-2">
+        <span className="text-[15px] font-semibold text-foreground">Inbox</span>
+        <ChevronDown className="h-3 w-3 text-muted-foreground" />
       </div>
 
-      <form action="/tasks" method="GET" className="mb-4">
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          background: 'var(--surface)',
-          border: '1px solid var(--border)',
-          borderRadius: '6px',
-          padding: '0 10px',
-          maxWidth: '320px',
-        }}>
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" style={{ flexShrink: 0, color: 'var(--text-tertiary)' }}>
-            <circle cx="6" cy="6" r="4.5" stroke="currentColor" strokeWidth="1.3" />
-            <path d="M9.5 9.5L12.5 12.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
-          </svg>
-          <input
-            name="q"
-            type="text"
-            placeholder="Buscar tareas..."
-            style={{
-              flex: 1,
-              height: '32px',
-              background: 'transparent',
-              border: 'none',
-              outline: 'none',
-              fontSize: '13px',
-              color: 'var(--text)',
-            }}
+      {/* Tabs */}
+      <div className="flex items-center gap-4 mb-3" role="tablist" aria-label="Filtrar por estado">
+        <TabLink href="/" active={activeTab === 'active'}>Activas ({activeCt})</TabLink>
+        <TabLink href="/?tab=delegated" active={activeTab === 'delegated'}>Delegadas ({delegatedCt})</TabLink>
+        <TabLink href="/?tab=done" active={activeTab === 'done'}>Finalizadas ({doneCt})</TabLink>
+      </div>
+
+      {/* Section subheader */}
+      <div className="flex items-center gap-2 mb-2 py-1">
+        <Button variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground" aria-label="Opciones">
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
+        <span className="text-[13px] font-medium text-muted-foreground">
+          Tareas {tabLabel[activeTab] || 'Activas'}
+        </span>
+        <span className="text-[13px] text-muted-foreground">
+          {tasks.length}
+        </span>
+      </div>
+
+      {/* Task list */}
+      <div>
+        {tasks.map(t => (
+          <TaskRow
+            key={t.id}
+            id={t.id}
+            title={t.title || t.body}
+            priority={t.priority}
+            createdAt={t.createdAt}
+            assignee={t.assignee}
+            deadline={t.deadline}
+            done={t.status === 'done'}
           />
-        </div>
-      </form>
+        ))}
+      </div>
 
-      {domains.map(domain => {
-        const domainTasks = domain.spaces.flatMap(s => s.tasks)
-        if (domainTasks.length === 0) return null
-
-        return (
-          <div key={domain.id} className="mb-4">
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 12px',
-              background: 'var(--surface)',
-              borderRadius: '6px',
-              marginBottom: '8px',
-            }}>
-              <span className="shrink-0 rounded-full" style={{ width: 7, height: 7, background: domain.color }} />
-              <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color: 'var(--text-secondary)' }}>
-                {domain.name}
-              </span>
-              <span className="text-[11px] font-mono" style={{ color: 'var(--text-tertiary)' }}>
-                {domainTasks.length}
-              </span>
-            </div>
-
-            {domain.spaces.filter(s => s.tasks.length > 0).map(space => {
-              const color = space.color || domain.color
-              return (
-                <div key={space.id} className="mb-2">
-                  <Link href={`/space/${space.slug}`}
-                    className="flex items-center gap-2 h-7 pl-6 no-underline">
-                    <svg width="12" height="12" viewBox="0 0 14 14" fill="none" className="shrink-0">
-                      <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1" strokeLinejoin="round" />
-                    </svg>
-                    <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
-                      {space.name}
-                    </span>
-                    <span className="text-[11px] font-mono" style={{ color: 'var(--text-tertiary)' }}>
-                      {space.tasks.length}
-                    </span>
-                  </Link>
-
-                  <div className="pl-4">
-                    {space.tasks.map(t => (
-                      <TaskRow
-                        key={t.id}
-                        id={t.id}
-                        title={t.title || t.body}
-                        assignee={t.assignee}
-                        date={t.createdAt}
-                        type={t.type}
-                        tags={t.tags}
-                        deadline={t.deadline}
-                        spaceColor={color}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )
-      })}
-
-      {totalOpen === 0 && (
+      {tasks.length === 0 && (
         <div className="flex flex-col items-center justify-center py-20">
-          <p className="text-[13px]" style={{ color: 'var(--text-secondary)' }}>Sin tareas abiertas</p>
-          <p className="text-[11px] mt-1" style={{ color: 'var(--text-tertiary)' }}>Crea una para comenzar</p>
+          <p className="text-[13px] text-muted-foreground">
+            Sin tareas {(tabLabel[activeTab] || 'activas').toLowerCase()}
+          </p>
+          <p className="text-[11px] mt-1 text-muted-foreground">
+            Usa ⌘K para crear una nueva tarea
+          </p>
         </div>
       )}
     </div>
+  )
+}
+
+function TabLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
+  return (
+    <Link href={href}
+      role="tab"
+      aria-selected={active}
+      className={cn(
+        'text-[13px]',
+        active ? 'text-foreground font-medium' : 'text-muted-foreground',
+      )}>
+      {children}
+    </Link>
   )
 }

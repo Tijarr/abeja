@@ -3,6 +3,16 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import TaskActions from './TaskActions'
 import AddComment from './AddComment'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,18 +37,29 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
   return (
     <div className="px-4 md:px-8 pt-4 md:pt-6 pb-16 max-w-2xl">
-      <div className="flex items-center gap-2 mb-5 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
-        <Link href="/" className="transition-opacity hover:opacity-70">Inicio</Link>
-        <span>›</span>
-        <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
-        <span>›</span>
-        <Link href={`/space/${task.space.slug}`}
-          className="transition-opacity hover:opacity-70" style={{ color }}>
-          {task.space.name}
-        </Link>
-      </div>
+      <Breadcrumb className="mb-5">
+        <BreadcrumbList className="text-xs">
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/">Inicio</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>›</BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator>›</BreadcrumbSeparator>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href={`/space/${task.space.slug}`} style={{ color }}>
+                {task.space.name}
+              </Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-      <TaskActions taskId={task.id} status={task.status || 'open'} spaceName={task.space.name} />
+      <TaskActions taskId={task.id} status={task.status || 'active'} spaceName={task.space.name} />
 
       {task.title && task.title !== task.body?.slice(0, 80) && (
         <h1 className="text-[20px] md:text-[22px] font-semibold tracking-tight mb-4 leading-snug">
@@ -46,14 +67,14 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </h1>
       )}
 
-      <div className="mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-        <p className="text-[14px] leading-relaxed whitespace-pre-wrap"
-          style={{ color: isDone ? 'var(--text-secondary)' : 'var(--text)' }}>
+      <div className="mb-8 pb-6 border-b border-border">
+        <p className="text-sm leading-relaxed whitespace-pre-wrap"
+          style={{ color: isDone ? 'var(--muted-foreground)' : 'var(--foreground)' }}>
           {task.body}
         </p>
       </div>
 
-      <div className="space-y-3 mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
+      <div className="space-y-3 mb-8 pb-6 border-b border-border">
         <MetaRow label="Dominio">
           <span style={{ color: task.space.domain.color }}>{task.space.domain.name}</span>
         </MetaRow>
@@ -67,25 +88,25 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
         </MetaRow>
 
         <MetaRow label="Estado">
-          <span style={{ color: isDone ? 'var(--text-tertiary)' : '#6bc9a0' }}>
-            {isDone ? 'Completada' : 'Abierta'}
-          </span>
+          <Badge variant={isDone ? 'secondary' : 'default'} className="text-xs">
+            {isDone ? 'Completada' : 'Activa'}
+          </Badge>
         </MetaRow>
 
         <MetaRow label="Tipo">
-          <span style={{ color: task.type !== 'normal' ? 'var(--accent)' : 'var(--text-secondary)' }}>
+          <span className={task.type !== 'normal' ? 'text-primary' : 'text-muted-foreground'}>
             {task.type}
           </span>
         </MetaRow>
 
         {task.assignee && (
           <MetaRow label="Responsable">
-            <span style={{ color: 'var(--text-secondary)' }}>{task.assignee}</span>
+            <span className="text-muted-foreground">{task.assignee}</span>
           </MetaRow>
         )}
 
         <MetaRow label="Creada">
-          <span style={{ color: 'var(--text-secondary)' }}>
+          <span className="text-muted-foreground">
             {task.createdAt.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
           </span>
         </MetaRow>
@@ -98,8 +119,8 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           const isOverdue = !isDone && dlDay < today
           const isToday = dlDay.getTime() === today.getTime()
           return (
-            <MetaRow label="Fecha limite">
-              <span style={{ color: isOverdue ? '#d4636c' : isToday ? 'var(--accent)' : 'var(--text-secondary)' }}>
+            <MetaRow label="Fecha límite">
+              <span className={isOverdue ? 'text-destructive' : isToday ? 'text-primary' : 'text-muted-foreground'}>
                 {dl.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
                 {isOverdue && ' (vencida)'}
                 {isToday && !isDone && ' (hoy)'}
@@ -110,7 +131,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
         {task.completedAt && (
           <MetaRow label="Completada">
-            <span style={{ color: 'var(--text-secondary)' }}>
+            <span className="text-muted-foreground">
               {task.completedAt.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })}
             </span>
           </MetaRow>
@@ -120,10 +141,9 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
           <MetaRow label="Tags">
             <div className="flex flex-wrap gap-1.5">
               {task.tags.map((tag: string) => (
-                <span key={tag} className="text-[11px] px-1.5 py-0.5 rounded"
-                  style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--text-tertiary)' }}>
+                <Badge key={tag} variant="secondary" className="text-[11px]">
                   {tag}
-                </span>
+                </Badge>
               ))}
             </div>
           </MetaRow>
@@ -131,36 +151,35 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
         {task.capRef && (
           <MetaRow label="Ref">
-            <span className="tabular-nums" style={{ color: 'var(--text-tertiary)' }}>{task.capRef}</span>
+            <span className="tabular-nums text-muted-foreground">{task.capRef}</span>
           </MetaRow>
         )}
       </div>
 
       {/* Documents */}
       {task.documents.length > 0 && (
-        <div className="mb-8 pb-6" style={{ borderBottom: '1px solid var(--border)' }}>
-          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"
-            style={{ color: 'var(--text-tertiary)' }}>
+        <div className="mb-8 pb-6 border-b border-border">
+          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
             Documentos ({task.documents.length})
           </p>
           <div className="space-y-2">
             {task.documents.map(td => (
-              <div key={td.document.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-                style={{ background: 'var(--surface)' }}>
-                <span className="text-[13px]" style={{ color: 'var(--text)' }}>{td.document.name}</span>
-                {td.document.url && (
-                  <a href={td.document.url} target="_blank" rel="noopener noreferrer"
-                    className="text-[11px] ml-auto transition-opacity hover:opacity-70"
-                    style={{ color: 'var(--accent)' }}>
-                    Abrir
-                  </a>
-                )}
-                {td.document.mimeType && (
-                  <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>
-                    {td.document.mimeType}
-                  </span>
-                )}
-              </div>
+              <Card key={td.document.id}>
+                <CardContent className="flex items-center gap-3 px-3 py-2.5">
+                  <span className="text-[13px] text-foreground">{td.document.name}</span>
+                  {td.document.url && (
+                    <a href={td.document.url} target="_blank" rel="noopener noreferrer"
+                      className="text-[11px] ml-auto transition-opacity hover:opacity-70 text-primary">
+                      Abrir
+                    </a>
+                  )}
+                  {td.document.mimeType && (
+                    <span className="text-[10px] text-muted-foreground">
+                      {td.document.mimeType}
+                    </span>
+                  )}
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -168,33 +187,33 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 
       {/* Comments */}
       <div className="mb-8">
-        <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"
-          style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
           Comentarios {task.comments.length > 0 && `(${task.comments.length})`}
         </p>
 
         {task.comments.length > 0 && (
           <div className="space-y-3 mb-4">
             {task.comments.map(c => (
-              <div key={c.id} className="px-3 py-3 rounded-lg" style={{ background: 'var(--surface)' }}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-[12px] font-medium" style={{ color: 'var(--text-secondary)' }}>
-                    {c.author}
-                  </span>
-                  <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>
-                    {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                  {c.authorType === 'agent' && (
-                    <span className="text-[10px] px-1.5 py-0.5 rounded"
-                      style={{ background: 'rgba(232,171,94,0.15)', color: 'var(--accent)' }}>
-                      agente
+              <Card key={c.id}>
+                <CardContent className="px-3 py-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {c.author}
                     </span>
-                  )}
-                </div>
-                <p className="text-[13px] whitespace-pre-wrap leading-relaxed" style={{ color: 'var(--text)' }}>
-                  {c.body}
-                </p>
-              </div>
+                    <span className="text-[11px] text-muted-foreground">
+                      {c.createdAt.toLocaleDateString('es-CO', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {c.authorType === 'agent' && (
+                      <Badge variant="outline" className="text-[10px] text-primary border-primary/20">
+                        agente
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-[13px] whitespace-pre-wrap leading-relaxed text-foreground">
+                    {c.body}
+                  </p>
+                </CardContent>
+              </Card>
             ))}
           </div>
         )}
@@ -205,27 +224,27 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
       {/* Contacts */}
       {task.space.contacts.length > 0 && (
         <div>
-          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3"
-            style={{ color: 'var(--text-tertiary)' }}>
+          <p className="text-[11px] font-semibold uppercase tracking-widest mb-3 text-muted-foreground">
             Contactos de {task.space.name} ({task.space.contacts.length})
           </p>
           <div className="space-y-2">
             {task.space.contacts.map(c => (
-              <div key={c.id} className="flex items-center gap-3 px-3 py-2.5 rounded-lg"
-                style={{ background: 'var(--surface)' }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium shrink-0"
-                  style={{ background: 'rgba(255,255,255,0.08)', color: 'var(--text-secondary)' }}>
-                  {c.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px]" style={{ color: 'var(--text)' }}>{c.name}</p>
-                  {c.role && <p className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{c.role}</p>}
-                </div>
-                {c.phone && (
-                  <a href={`tel:${c.phone}`} className="text-[11px] transition-opacity hover:opacity-70"
-                    style={{ color: 'var(--accent)' }}>{c.phone}</a>
-                )}
-              </div>
+              <Card key={c.id}>
+                <CardContent className="flex items-center gap-3 px-3 py-2.5">
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium shrink-0 bg-secondary text-muted-foreground">
+                    {c.name.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] text-foreground">{c.name}</p>
+                    {c.role && <p className="text-[11px] text-muted-foreground">{c.role}</p>}
+                  </div>
+                  {c.phone && (
+                    <a href={`tel:${c.phone}`} className="text-[11px] transition-opacity hover:opacity-70 text-primary">
+                      {c.phone}
+                    </a>
+                  )}
+                </CardContent>
+              </Card>
             ))}
           </div>
         </div>
@@ -237,7 +256,7 @@ export default async function TaskPage({ params }: { params: Promise<{ id: strin
 function MetaRow({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-4">
-      <span className="text-[12px] shrink-0 w-24 pt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+      <span className="text-xs shrink-0 w-24 pt-0.5 text-muted-foreground">
         {label}
       </span>
       <div className="text-[13px] flex-1 min-w-0">{children}</div>

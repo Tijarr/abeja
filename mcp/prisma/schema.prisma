@@ -45,6 +45,7 @@ model Task {
   updatedAt   DateTime       @updatedAt
   completedAt DateTime?
   type        String         @default("normal")
+  priority    String         @default("normal")
   assignee    String?
   comments    Comment[]
   space       Space          @relation(fields: [spaceId], references: [id], onDelete: NoAction, onUpdate: NoAction)

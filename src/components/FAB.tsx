@@ -1,30 +1,17 @@
 'use client'
+
+import { Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+
 export default function FAB() {
   return (
-    <button
+    <Button
       data-new-capture="true"
       aria-label="Nueva captura"
-      className="md:hidden fixed z-40"
-      style={{
-        bottom: '24px',
-        right: '16px',
-        width: '56px',
-        height: '56px',
-        borderRadius: '50%',
-        background: 'var(--accent)',
-        color: '#0a0a0a',
-        fontSize: '28px',
-        fontWeight: '300',
-        lineHeight: 1,
-        boxShadow: 'none',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        border: 'none',
-        cursor: 'pointer',
-      }}
+      size="icon"
+      className="md:hidden fixed z-40 bottom-6 right-4 h-14 w-14 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg"
     >
-      +
-    </button>
+      <Plus className="h-7 w-7" strokeWidth={1.5} />
+    </Button>
   )
 }

@@ -2,6 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
+import { cn } from '@/lib/utils'
 
 const COLORS = ['#6bc9a0', '#d4636c', '#bb87fc', '#e07eb4', '#4ea8db', '#e8ab5e', '#8b9ab0', '#d4a0e0', '#7cb3f4', '#f0c674']
 
@@ -59,55 +64,51 @@ export default function DomainEditForm({ slug, name, description, color, spaceCo
             type="text"
             value={formName}
             onChange={e => setFormName(e.target.value)}
-            className="text-[22px] font-semibold tracking-tight bg-transparent outline-none w-full"
-            style={{ color: 'var(--text)' }}
+            className="text-[22px] font-semibold tracking-tight bg-transparent outline-none w-full text-foreground"
             placeholder="Nombre del dominio"
           />
         </div>
-        <p className="text-[11px] ml-6" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-[11px] ml-6 text-muted-foreground">
           {spaceCount} espacio{spaceCount !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Slug */}
       <div className="mb-6">
-        <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
+        <Label className="text-[11px] mb-1.5 text-muted-foreground">
           Slug (URL)
-        </label>
-        <div className="flex items-center gap-0 rounded-lg overflow-hidden"
-          style={{ border: '1px solid var(--border)' }}>
-          <span className="px-3 py-2 text-[13px] shrink-0" style={{ background: 'var(--bg)', color: 'var(--text-tertiary)' }}>
+        </Label>
+        <div className="flex items-center gap-0 rounded-lg overflow-hidden border border-border">
+          <span className="px-3 py-2 text-[13px] shrink-0 bg-background text-muted-foreground">
             /domain/
           </span>
-          <input
+          <Input
             type="text"
             value={formSlug}
             onChange={e => setFormSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
-            className="flex-1 px-2 py-2 text-[13px] bg-transparent outline-none"
-            style={{ color: 'var(--text)' }}
+            className="flex-1 border-0 rounded-none text-[13px] focus-visible:ring-0"
           />
         </div>
         {slugChanged && (
-          <p className="text-[11px] mt-1.5 px-1" style={{ color: 'var(--accent)' }}>
-            El slug anterior /{slug} redirigira automaticamente al nuevo
+          <p className="text-[11px] mt-1.5 px-1 text-primary">
+            El slug anterior /{slug} redirigirá automáticamente al nuevo
           </p>
         )}
       </div>
 
       {/* Color */}
       <div className="mb-6">
-        <label className="block text-[11px] font-medium mb-2" style={{ color: 'var(--text-tertiary)' }}>
+        <Label className="text-[11px] mb-2 text-muted-foreground">
           Color
-        </label>
+        </Label>
         <div className="flex gap-2 flex-wrap">
           {COLORS.map(c => (
             <button key={c} onClick={() => setFormColor(c)}
-              className="w-7 h-7 rounded-full transition-transform hover:scale-110"
-              style={{
-                background: c,
-                outline: formColor === c ? '2px solid var(--text)' : '2px solid transparent',
-                outlineOffset: '2px',
-              }}
+              className={cn(
+                'w-7 h-7 rounded-full transition-transform hover:scale-110',
+                formColor === c ? 'ring-2 ring-foreground ring-offset-2 ring-offset-background' : '',
+              )}
+              style={{ background: c }}
             />
           ))}
         </div>
@@ -115,43 +116,34 @@ export default function DomainEditForm({ slug, name, description, color, spaceCo
 
       {/* Description */}
       <div className="mb-8">
-        <label className="block text-[11px] font-medium mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
+        <Label className="text-[11px] mb-1.5 text-muted-foreground">
           Contexto (markdown)
-        </label>
-        <textarea
+        </Label>
+        <Textarea
           value={formDesc}
           onChange={e => setFormDesc(e.target.value)}
           rows={8}
           placeholder="Describe este dominio. Este texto sirve como contexto para ti y para agentes IA..."
-          className="w-full p-3 rounded-lg text-[13px] leading-relaxed resize-y outline-none"
-          style={{
-            background: 'var(--bg)',
-            border: '1px solid var(--border)',
-            color: 'var(--text)',
-          }}
+          className="text-[13px] leading-relaxed resize-y bg-background border-border"
         />
       </div>
 
       {/* Actions */}
       <div className="flex items-center gap-3">
-        <button
+        <Button
           onClick={handleSave}
           disabled={saving || !formName.trim() || !formSlug.trim()}
-          className="px-4 py-2 rounded-lg text-[13px] font-medium transition-opacity hover:opacity-90 disabled:opacity-40"
-          style={{ background: 'var(--accent)', color: '#0a0a0a' }}
         >
           {saving ? 'Guardando...' : 'Guardar'}
-        </button>
-        <button
-          onClick={() => router.back()}
-          className="px-4 py-2 rounded-lg text-[13px] transition-opacity hover:opacity-70"
-          style={{ color: 'var(--text-secondary)' }}
-        >
+        </Button>
+        <Button variant="ghost" onClick={() => router.back()}>
           Cancelar
-        </button>
+        </Button>
         {message && (
-          <span className="text-[12px]"
-            style={{ color: message === 'Guardado' ? '#6bc9a0' : '#d4636c' }}>
+          <span className={cn(
+            'text-xs',
+            message === 'Guardado' ? 'text-emerald-400' : 'text-destructive',
+          )}>
             {message}
           </span>
         )}

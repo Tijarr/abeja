@@ -1,6 +1,9 @@
 'use client'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 export default function Login() {
   const [pw, setPw] = useState('')
@@ -26,31 +29,21 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center px-6">
       <form onSubmit={submit} className="w-full max-w-[320px]">
         <h1 className="text-[22px] font-semibold tracking-tight mb-1">Abeja</h1>
-        <p className="text-[13px] mb-8" style={{ color: 'var(--text-tertiary)' }}>Enter password to continue</p>
-        
-        <input
+        <p className="text-[13px] mb-8 text-muted-foreground">Ingresa la contraseña para continuar</p>
+
+        <Input
           type="password"
           value={pw}
           onChange={e => { setPw(e.target.value); setErr(false) }}
-          placeholder="Password"
+          placeholder="Contraseña"
           autoFocus
-          className="w-full px-3 py-2.5 rounded-lg text-[14px] outline-none transition-colors"
-          style={{
-            background: 'var(--surface)',
-            border: `1px solid ${err ? '#d4636c' : 'var(--border)'}`,
-            color: 'var(--text)',
-          }}
-          onFocus={(e) => e.currentTarget.style.borderColor = err ? '#d4636c' : 'var(--border-hover)'}
-          onBlur={(e) => e.currentTarget.style.borderColor = err ? '#d4636c' : 'var(--border)'}
+          className={err ? 'border-destructive focus-visible:ring-destructive' : ''}
         />
-        {err && <p className="text-[12px] mt-2" style={{ color: '#d4636c' }}>Invalid password</p>}
-        
-        <button type="submit"
-          className="w-full mt-4 px-3 py-2.5 rounded-lg text-[14px] font-medium transition-opacity hover:opacity-90"
-          style={{ background: 'var(--text)', color: 'var(--bg)' }}
-        >
-          Continue
-        </button>
+        {err && <p className="text-xs mt-2 text-destructive">Contraseña inválida</p>}
+
+        <Button type="submit" className="w-full mt-4" variant="secondary">
+          Continuar
+        </Button>
       </form>
     </div>
   )

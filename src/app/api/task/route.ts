@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/prisma'
+import { isValidPriority } from '@/lib/types'
 
 function normalizeTitle(text: string): string {
   let t = text.split(/[.\n]/)[0].trim()
@@ -23,7 +24,9 @@ export async function GET(req: Request) {
 
     const where: Prisma.TaskWhereInput = {}
     if (spaceSlug) where.space = { slug: spaceSlug }
-    if (status) where.status = status
+    if (status) where.status = status === 'open' ? 'active' : status
+    const priority = searchParams.get('priority')
+    if (priority) where.priority = priority
 
     const [tasks, total] = await Promise.all([
       prisma.task.findMany({
@@ -45,9 +48,12 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const data = await req.json()
-    const { body, title, space: spaceSlug, deadline, tags, type, assignee } = data
+    const { body, title, space: spaceSlug, deadline, tags, type, assignee, priority } = data
 
     if (!body) return NextResponse.json({ error: 'body required' }, { status: 400 })
+    if (priority !== undefined && priority !== '' && !isValidPriority(priority)) {
+      return NextResponse.json({ error: 'invalid priority. Must be: urgent, high, normal, low, review' }, { status: 400 })
+    }
 
     let spaceRecord = spaceSlug
       ? await prisma.space.findFirst({ where: { slug: spaceSlug } })
@@ -76,8 +82,9 @@ export async function POST(req: Request) {
         type: type || 'normal',
         assignee: assignee || null,
         tags: tags || [],
-        status: 'open',
+        status: 'active',
         deadline: deadline ? new Date(deadline) : null,
+        priority: priority || 'normal',
         source: 'api',
         capRef,
       },

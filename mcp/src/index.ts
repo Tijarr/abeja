@@ -23,7 +23,7 @@ server.tool(
       include: {
         spaces: {
           orderBy: { sortOrder: "asc" },
-          include: { _count: { select: { tasks: { where: { status: "open" } } } } },
+          include: { _count: { select: { tasks: { where: { status: "active" } } } } },
         },
       },
     });
@@ -51,7 +51,7 @@ server.tool(
       orderBy: { sortOrder: "asc" },
       include: {
         domain: { select: { name: true, slug: true } },
-        _count: { select: { tasks: { where: { status: "open" } }, contacts: true, documents: true } },
+        _count: { select: { tasks: { where: { status: "active" } }, contacts: true, documents: true } },
       },
     });
     return {
@@ -73,10 +73,12 @@ server.tool(
   {
     space: z.string().describe("Space slug"),
     status: z.string().optional().describe("Filter by status: 'open' or 'done'"),
+    priority: z.string().optional().describe("Filter by priority: urgent, high, normal, low, review"),
   },
-  async ({ space, status }) => {
+  async ({ space, status, priority }) => {
     const where: Record<string, unknown> = { space: { slug: space } };
-    if (status) where.status = status;
+    if (status) where.status = status === 'open' ? 'active' : status;
+    if (priority) where.priority = priority;
     const tasks = await prisma.task.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -85,7 +87,7 @@ server.tool(
     return {
       content: [{ type: "text", text: JSON.stringify(tasks.map(t => ({
         id: t.id, title: t.title, body: t.body.substring(0, 200),
-        type: t.type, assignee: t.assignee, status: t.status,
+        type: t.type, assignee: t.assignee, status: t.status, priority: t.priority,
         tags: t.tags, deadline: t.deadline, capRef: t.capRef,
         createdAt: t.createdAt, completedAt: t.completedAt,
         comments: t._count.comments, documents: t._count.documents,
@@ -112,7 +114,7 @@ server.tool(
     return {
       content: [{ type: "text", text: JSON.stringify({
         id: task.id, title: task.title, body: task.body,
-        type: task.type, assignee: task.assignee, status: task.status,
+        type: task.type, assignee: task.assignee, status: task.status, priority: task.priority,
         tags: task.tags, deadline: task.deadline, capRef: task.capRef,
         createdAt: task.createdAt, completedAt: task.completedAt,
         space: { name: task.space.name, slug: task.space.slug, domain: task.space.domain.name },
@@ -141,8 +143,9 @@ server.tool(
     assignee: z.string().optional().describe("Person responsible"),
     tags: z.array(z.string()).optional().describe("Tags for the task"),
     deadline: z.string().optional().describe("Deadline as ISO date string"),
+    priority: z.enum(['urgent', 'high', 'normal', 'low', 'review']).optional().describe("Priority: urgent, high, normal, low, review"),
   },
-  async ({ space, body, title, type, assignee, tags, deadline }) => {
+  async ({ space, body, title, type, assignee, tags, deadline, priority }) => {
     const spaceRecord = await prisma.space.findFirst({ where: { slug: space } });
     if (!spaceRecord) return { content: [{ type: "text", text: `Space '${space}' not found` }] };
 
@@ -161,9 +164,10 @@ server.tool(
         title: autoTitle,
         body,
         type: type || "normal",
+        priority: priority || "normal",
         assignee: assignee || null,
         tags: tags || [],
-        status: "open",
+        status: "active",
         deadline: deadline ? new Date(deadline) : null,
         source: "mcp",
         capRef,
@@ -187,8 +191,9 @@ server.tool(
     body: z.string().optional().describe("New body"),
     tags: z.array(z.string()).optional().describe("New tags"),
     deadline: z.string().optional().describe("New deadline as ISO date string"),
+    priority: z.enum(['urgent', 'high', 'normal', 'low', 'review']).optional().describe("Priority: urgent, high, normal, low, review"),
   },
-  async ({ id, status, assignee, type: taskType, title, body, tags, deadline }) => {
+  async ({ id, status, assignee, type: taskType, title, body, tags, deadline, priority }) => {
     const data: Record<string, unknown> = {};
     if (status !== undefined) data.status = status;
     if (assignee !== undefined) data.assignee = assignee;
@@ -197,6 +202,8 @@ server.tool(
     if (body !== undefined) data.body = body;
     if (tags !== undefined) data.tags = tags;
     if (deadline !== undefined) data.deadline = deadline ? new Date(deadline) : null;
+    if (priority !== undefined) data.priority = priority;
+    if (data.status === 'open') data.status = 'active';
     if (status === "done") data.completedAt = new Date();
 
     const task = await prisma.task.update({ where: { id }, data });

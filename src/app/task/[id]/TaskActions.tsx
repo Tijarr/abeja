@@ -2,17 +2,29 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import { Check, RotateCcw, Trash2 } from 'lucide-react'
 
-export default function TaskActions({ taskId, status, spaceName }: { taskId: number; status: string; spaceName: string }) {
+export default function TaskActions({ taskId, status }: { taskId: number; status: string; spaceName: string }) {
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
-  const [showConfirm, setShowConfirm] = useState(false)
 
-  const isOpen = status === 'open'
+  const isOpen = status === 'active' || status === 'open'
 
   async function toggleStatus() {
     setLoading('status')
-    const newStatus = isOpen ? 'done' : 'open'
+    const newStatus = isOpen ? 'done' : 'active'
     await fetch(`/api/task/${taskId}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -30,46 +42,49 @@ export default function TaskActions({ taskId, status, spaceName }: { taskId: num
 
   return (
     <div className="flex items-center gap-2 mb-5 flex-wrap">
-      <button
+      <Button
+        variant="outline"
+        size="sm"
         onClick={toggleStatus}
         disabled={loading === 'status'}
-        className="px-3 py-1.5 rounded-md text-[12px] font-medium transition-opacity hover:opacity-85 disabled:opacity-40"
-        style={{
-          background: isOpen ? 'rgba(107, 201, 160, 0.15)' : 'rgba(232, 171, 94, 0.15)',
-          color: isOpen ? '#6bc9a0' : 'var(--accent)',
-        }}
+        className={isOpen
+          ? 'border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10'
+          : 'border-primary/20 text-primary hover:bg-primary/10'
+        }
       >
-        {loading === 'status' ? '...' : isOpen ? '✓ Completar' : '↺ Reabrir'}
-      </button>
+        {loading === 'status' ? '...' : isOpen ? (
+          <><Check className="h-3.5 w-3.5 mr-1" /> Completar</>
+        ) : (
+          <><RotateCcw className="h-3.5 w-3.5 mr-1" /> Reabrir</>
+        )}
+      </Button>
 
-      {!showConfirm ? (
-        <button
-          onClick={() => setShowConfirm(true)}
-          className="px-3 py-1.5 rounded-md text-[12px] transition-opacity hover:opacity-85"
-          style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--text-tertiary)' }}
-        >
-          Eliminar
-        </button>
-      ) : (
-        <div className="flex items-center gap-2">
-          <span className="text-[12px]" style={{ color: '#d4636c' }}>¿Seguro?</span>
-          <button
-            onClick={deleteTask}
-            disabled={loading === 'delete'}
-            className="px-3 py-1.5 rounded-md text-[12px] font-medium transition-opacity hover:opacity-85 disabled:opacity-40"
-            style={{ background: 'rgba(212, 99, 108, 0.15)', color: '#d4636c' }}
-          >
-            {loading === 'delete' ? '...' : 'Sí, eliminar'}
-          </button>
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="px-3 py-1.5 rounded-md text-[12px] transition-opacity hover:opacity-85"
-            style={{ background: 'rgba(255,255,255,0.04)', color: 'var(--text-tertiary)' }}
-          >
-            No
-          </button>
-        </div>
-      )}
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Trash2 className="h-3.5 w-3.5 mr-1" />
+            Eliminar
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>¿Eliminar esta tarea?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. La tarea será eliminada permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={deleteTask}
+              disabled={loading === 'delete'}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {loading === 'delete' ? '...' : 'Sí, eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

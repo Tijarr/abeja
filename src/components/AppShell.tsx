@@ -1,7 +1,15 @@
 'use client'
+
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
+import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet'
+import { Button } from '@/components/ui/button'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Separator } from '@/components/ui/separator'
+import { Inbox, ChevronRight, Pencil, Plus, Menu } from 'lucide-react'
 
 type SpaceData = {
   id: number
@@ -21,9 +29,11 @@ type DomainData = {
 
 export default function AppShell({
   domains,
+  inboxCount,
   children,
 }: {
   domains: DomainData[]
+  inboxCount: number
   children: React.ReactNode
 }) {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -36,126 +46,91 @@ export default function AppShell({
   return (
     <div className="flex h-screen overflow-hidden">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-[220px] md:shrink-0 md:flex-col h-screen overflow-y-auto"
-        style={{ background: 'var(--surface)', borderRight: '1px solid var(--border)' }}>
-        <SidebarContent domains={domains} />
+      <aside className="hidden md:flex md:w-[220px] md:shrink-0 md:flex-col h-screen overflow-y-auto bg-sidebar border-r border-sidebar-border">
+        <SidebarContent domains={domains} inboxCount={inboxCount} />
       </aside>
 
       {/* Content column: mobile header + main */}
       <div className="flex-1 flex flex-col overflow-hidden min-w-0">
         {/* Mobile header */}
-        <header className="md:hidden shrink-0 flex items-center justify-between px-4 py-3"
-          style={{ background: 'var(--surface)', borderBottom: '1px solid var(--border)', paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
-          <button onClick={() => setDrawerOpen(true)}
-            className="p-1.5 -ml-1 rounded-md hover:bg-[var(--surface-hover)]"
-            style={{ color: 'var(--text-secondary)', border: 'none', background: 'none', cursor: 'pointer' }}
-            aria-label="Abrir menu">
-            <svg width="18" height="14" viewBox="0 0 18 14" fill="currentColor">
-              <rect width="18" height="1.5" rx="0.75" />
-              <rect y="6.25" width="18" height="1.5" rx="0.75" />
-              <rect y="12.5" width="18" height="1.5" rx="0.75" />
-            </svg>
-          </button>
-          <Link href="/" className="absolute left-1/2 -translate-x-1/2 text-[15px] font-semibold tracking-tight no-underline"
-            style={{ color: 'var(--text)' }}>
-            Abeja
+        <header className="md:hidden shrink-0 flex items-center justify-between px-4 py-3 bg-card border-b border-border pt-[max(0.75rem,env(safe-area-inset-top))]">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="-ml-1 text-muted-foreground"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Abrir menu"
+          >
+            <Menu className="h-[18px] w-[18px]" />
+          </Button>
+          <Link href="/" className="absolute left-1/2 -translate-x-1/2 text-[15px] font-semibold tracking-tight text-primary">
+            ABEJA.CO
           </Link>
           <div className="w-10" />
         </header>
 
         {/* Main */}
-        <main className="flex-1 overflow-y-auto min-w-0" style={{ overflowX: 'clip' }}>
+        <main className="flex-1 overflow-y-auto min-w-0 overflow-x-clip">
           {children}
         </main>
       </div>
 
       {/* Mobile drawer */}
-      <div
-        className="fixed inset-0 z-50 md:hidden"
-        style={{
-          pointerEvents: drawerOpen ? 'auto' : 'none',
-          visibility: drawerOpen ? 'visible' : 'hidden',
-        }}
-        onClick={close}
-      >
-        <div
-          className="absolute inset-0 transition-opacity duration-200"
-          style={{
-            background: 'rgba(0,0,0,0.55)',
-            opacity: drawerOpen ? 1 : 0,
-          }}
-        />
-        <aside
-          className="absolute top-0 left-0 bottom-0 w-[280px] overflow-y-auto transition-transform duration-200 ease-out"
-          style={{
-            background: 'var(--surface)',
-            transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
-            paddingBottom: 'env(safe-area-inset-bottom)',
-          }}
-          onClick={e => e.stopPropagation()}
-        >
-          <SidebarContent domains={domains} onNavigate={close} />
-        </aside>
-        <button onClick={close}
-          className="absolute top-3 right-3 p-1.5 rounded-md z-10 hover:bg-[var(--surface-hover)] transition-opacity duration-200"
-          style={{
-            color: 'var(--text-tertiary)',
-            border: 'none',
-            background: 'none',
-            cursor: 'pointer',
-            opacity: drawerOpen ? 1 : 0,
-          }}
-          aria-label="Cerrar menu">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-        </button>
-      </div>
+      <Sheet open={drawerOpen} onOpenChange={setDrawerOpen}>
+        <SheetContent side="left" className="w-[280px] p-0 bg-sidebar border-sidebar-border pb-[env(safe-area-inset-bottom)]">
+          <SheetTitle className="sr-only">Menú de navegación</SheetTitle>
+          <SidebarContent domains={domains} inboxCount={inboxCount} onNavigate={close} />
+        </SheetContent>
+      </Sheet>
     </div>
   )
 }
 
 /* ─── Sidebar content (pure render, no data fetching) ─── */
 
-function SidebarContent({ domains, onNavigate }: { domains: DomainData[]; onNavigate?: () => void }) {
+function SidebarContent({ domains, inboxCount, onNavigate }: { domains: DomainData[]; inboxCount: number; onNavigate?: () => void }) {
   return (
     <>
-      <div className="px-4 h-[52px] flex items-center shrink-0"
-        style={{ borderBottom: '1px solid var(--border)' }}>
-        <span className="text-[15px] font-semibold tracking-tight" style={{ color: 'var(--text)' }}>Abeja</span>
+      <div className="px-4 h-[52px] flex items-center shrink-0 border-b border-sidebar-border">
+        <span className="text-[15px] font-semibold tracking-tight text-primary">ABEJA.CO</span>
       </div>
 
-      <nav className="flex-1 px-2 py-2 overflow-y-auto">
-        <div className="space-y-px mb-3">
-          <NavItem href="/" onNavigate={onNavigate}>
-            <HomeIcon /> Inicio
-          </NavItem>
-          <NavItem href="/tasks" onNavigate={onNavigate}>
-            <TasksIcon /> Tareas
-          </NavItem>
-        </div>
+      <ScrollArea className="flex-1">
+        <nav className="px-2 py-2">
+          <div className="space-y-px mb-3">
+            <NavItemWithCount href="/" count={inboxCount} onNavigate={onNavigate}>
+              <Inbox className="h-3.5 w-3.5 shrink-0" /> Inbox
+            </NavItemWithCount>
+          </div>
 
-        {domains.map((domain, i) => {
-          const spacesWithTasks = domain.spaces.filter(s => s._count.tasks > 0)
-          if (spacesWithTasks.length === 0) return null
-          return (
-            <DomainGroup key={domain.id} domain={domain} defaultOpen={i < 3}>
-              {spacesWithTasks.map(space => (
-                <SpaceLink key={space.id} space={space} domainColor={domain.color} onNavigate={onNavigate} />
-              ))}
-            </DomainGroup>
-          )
-        })}
-      </nav>
+          {domains.map((domain, i) => {
+            const spacesWithTasks = domain.spaces.filter(s => s._count.tasks > 0)
+            if (spacesWithTasks.length === 0) return null
+            return (
+              <DomainGroup key={domain.id} domain={domain} defaultOpen={i < 3}>
+                {spacesWithTasks.map(space => (
+                  <SpaceLink key={space.id} space={space} domainColor={domain.color} onNavigate={onNavigate} />
+                ))}
+              </DomainGroup>
+            )
+          })}
+        </nav>
+      </ScrollArea>
 
-      <div className="px-2 py-2 shrink-0" style={{ borderTop: '1px solid var(--border)' }}>
-        <button
-          className="w-full flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium hover:opacity-85"
-          style={{ background: 'var(--accent)', color: '#0a0a0a', border: 'none', cursor: 'pointer' }}
-          data-new-capture="true">
-          <span className="text-[13px] leading-none font-light">+</span>
+      <Separator />
+      <div className="px-2 py-2 shrink-0">
+        <Button
+          className="w-full gap-1.5"
+          size="sm"
+          data-new-capture="true"
+        >
+          <Plus className="h-3.5 w-3.5" />
           Nueva tarea
-        </button>
+        </Button>
+        <div className="px-1 py-2 flex items-center gap-2">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--abeja-status-active)] animate-[pulse-dot_2s_ease-in-out_infinite] shrink-0" />
+          <span className="text-[11px] text-muted-foreground">Sistema Activo</span>
+        </div>
       </div>
     </>
   )
@@ -163,18 +138,17 @@ function SidebarContent({ domains, onNavigate }: { domains: DomainData[]; onNavi
 
 /* ─── Nav items ─── */
 
-function NavItem({ href, children, onNavigate }: { href: string; children: React.ReactNode; onNavigate?: () => void }) {
+function NavItemWithCount({ href, count, children, onNavigate }: { href: string; count: number; children: React.ReactNode; onNavigate?: () => void }) {
   const pathname = usePathname()
   const isActive = pathname === href
   return (
     <Link href={href} onClick={onNavigate}
-      className="flex items-center gap-2 px-2 py-1 rounded-md text-[13px] no-underline hover:bg-[var(--surface-hover)]"
-      style={{
-        color: isActive ? 'var(--text)' : 'var(--text-secondary)',
-        fontWeight: isActive ? 500 : 400,
-        background: isActive ? 'var(--surface-hover)' : undefined,
-      }}>
+      className={cn(
+        'flex items-center gap-2 px-2 py-1 rounded-md text-[13px] hover:bg-sidebar-accent',
+        isActive ? 'bg-sidebar-accent text-sidebar-foreground font-medium' : 'text-muted-foreground',
+      )}>
       {children}
+      <span className="ml-auto text-[11px] tabular-nums px-1.5 rounded-full bg-primary/10 text-primary">{count}</span>
     </Link>
   )
 }
@@ -196,26 +170,33 @@ function DomainGroup({ domain, defaultOpen, children }: { domain: DomainData; de
   }
 
   return (
-    <div className="mb-1">
-      <div className="group flex items-center gap-1 px-2 py-1 cursor-pointer rounded-md hover:bg-[var(--surface-hover)]"
-        onClick={toggle}>
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none"
-          className="shrink-0 transition-transform duration-150"
-          style={{ color: 'var(--text-tertiary)', transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>
-          <path d="M3 1.5L7 5L3 8.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-        <span className="text-[10px] font-semibold uppercase tracking-widest flex-1"
-          style={{ color: 'var(--text-tertiary)' }}>
-          {domain.name}
-        </span>
+    <Collapsible open={open} onOpenChange={toggle} className="mb-1">
+      <div className="group flex items-center">
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="group w-full flex items-center gap-1 px-2 py-1 cursor-pointer rounded-md hover:bg-sidebar-accent border-none bg-transparent"
+            aria-controls={`domain-${domain.slug}-spaces`}
+          >
+            <ChevronRight className={cn(
+              'h-2.5 w-2.5 shrink-0 text-muted-foreground transition-transform duration-150',
+              open && 'rotate-90',
+            )} />
+            <span className="text-[10px] font-semibold uppercase tracking-widest flex-1 text-left text-muted-foreground">
+              {domain.name}
+            </span>
+          </button>
+        </CollapsibleTrigger>
         <Link href={`/domain/${domain.slug}/edit`} onClick={e => e.stopPropagation()}
-          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-[var(--border)]"
+          className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-border"
           title="Editar dominio">
-          <EditIcon />
+          <Pencil className="h-3 w-3 text-muted-foreground" />
         </Link>
       </div>
-      {open && <div className="mt-0.5 space-y-px">{children}</div>}
-    </div>
+      <CollapsibleContent>
+        <div id={`domain-${domain.slug}-spaces`} className="mt-0.5 space-y-px">{children}</div>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }
 
@@ -228,63 +209,21 @@ function SpaceLink({ space, domainColor, onNavigate }: { space: SpaceData; domai
   return (
     <div className="group flex items-center">
       <Link href={href} onClick={onNavigate}
-        className="flex-1 min-w-0 flex items-center gap-2 pl-5 pr-1 py-1 rounded-md text-[13px] no-underline hover:bg-[var(--surface-hover)]"
-        style={{
-          color: isActive ? 'var(--text)' : 'var(--text-secondary)',
-          fontWeight: isActive ? 500 : 400,
-          background: isActive ? 'var(--surface-hover)' : undefined,
-        }}>
-        <HexIcon color={color} />
+        className={cn(
+          'flex-1 min-w-0 flex items-center gap-2 pl-5 pr-1 py-1 rounded-md text-[13px] hover:bg-sidebar-accent',
+          isActive ? 'bg-sidebar-accent text-sidebar-foreground font-medium' : 'text-muted-foreground',
+        )}>
+        <span className="shrink-0 w-2 h-2 rounded-full" style={{ background: color }} />
         <span className="flex-1 min-w-0 truncate">{space.name}</span>
-        <span className="shrink-0 min-w-[20px] text-right text-[11px] tabular-nums"
-          style={{ color: 'var(--text-tertiary)' }}>{space._count.tasks}</span>
+        <span className="shrink-0 min-w-[20px] text-right text-[11px] tabular-nums px-1.5 rounded-full bg-secondary text-muted-foreground">
+          {space._count.tasks}
+        </span>
       </Link>
       <Link href={`/space/${space.slug}/edit`}
-        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 mr-1 rounded hover:bg-[var(--border)]"
+        className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 mr-1 rounded hover:bg-border"
         title="Editar espacio">
-        <EditIcon />
+        <Pencil className="h-3 w-3 text-muted-foreground" />
       </Link>
     </div>
-  )
-}
-
-/* ─── Icons ─── */
-
-function HexIcon({ color }: { color: string }) {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="shrink-0">
-      <path d="M7 1.5L12 4.25V9.75L7 12.5L2 9.75V4.25L7 1.5Z" stroke={color} strokeWidth="1" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function EditIcon() {
-  return (
-    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor"
-      strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"
-      style={{ color: 'var(--text-tertiary)' }}>
-      <path d="M7 2l3 3-7 7H0v-3z" />
-      <path d="M5.5 3.5l3 3" />
-    </svg>
-  )
-}
-
-function HomeIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor"
-      strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-      <path d="M1.5 5.5L7 1l5.5 4.5V12a1 1 0 01-1 1h-9a1 1 0 01-1-1V5.5z" />
-      <path d="M5 13V8h4v5" />
-    </svg>
-  )
-}
-
-function TasksIcon() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor"
-      strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
-      <circle cx="7" cy="7" r="5.5" />
-      <path d="M4.5 7l2 2 3-3.5" />
-    </svg>
   )
 }

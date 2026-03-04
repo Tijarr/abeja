@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { isValidPriority } from '@/lib/types'
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -7,19 +8,26 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const id = parseInt(idStr)
     if (isNaN(id)) return NextResponse.json({ error: 'invalid id' }, { status: 400 })
     const data = await req.json()
-    const { body, title, status, deadline, tags, spaceId, type, assignee } = data
+    const { body, title, status, deadline, tags, spaceId, type, assignee, priority } = data
+
+    if (priority !== undefined && !isValidPriority(priority)) {
+      return NextResponse.json({ error: 'invalid priority. Must be: urgent, high, normal, low, review' }, { status: 400 })
+    }
+
+    const resolvedStatus = status === 'open' ? 'active' : status
 
     const task = await prisma.task.update({
       where: { id },
       data: {
         ...(body !== undefined && { body }),
         ...(title !== undefined && { title }),
-        ...(status !== undefined && { status }),
+        ...(status !== undefined && { status: resolvedStatus }),
         ...(deadline !== undefined && { deadline: deadline ? new Date(deadline) : null }),
         ...(tags !== undefined && { tags }),
         ...(spaceId !== undefined && { spaceId }),
         ...(type !== undefined && { type }),
         ...(assignee !== undefined && { assignee }),
+        ...(priority !== undefined && { priority }),
         ...(status === 'done' && { completedAt: new Date() }),
       },
       include: { space: true },
