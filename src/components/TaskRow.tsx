@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import { PRIORITY_COLORS, type Priority } from '@/lib/types'
-import { Separator } from '@/components/ui/separator'
 
 function PriorityDiamond({ priority }: { priority: string }) {
   const color = PRIORITY_COLORS[priority as Priority] || PRIORITY_COLORS.normal
@@ -15,21 +14,11 @@ function PriorityDiamond({ priority }: { priority: string }) {
   )
 }
 
-function formatDate(date: Date): string {
-  return date.toLocaleDateString('es-CO', { month: 'short', day: 'numeric' }).replace('.', '')
-}
-
-function formatFullDate(date: Date): string {
-  return date.toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' })
-}
-
 export default function TaskRow({
   id,
   title,
   priority = 'normal',
-  createdAt,
   assignee,
-  deadline,
   done = false,
 }: {
   id: number
@@ -40,16 +29,6 @@ export default function TaskRow({
   deadline?: Date | null
   done?: boolean
 }) {
-  const deadlineColor = (() => {
-    if (done || !deadline) return 'text-muted-foreground'
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-    const dl = new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate())
-    if (dl < today) return 'text-destructive'
-    if (dl.getTime() === today.getTime()) return 'text-primary'
-    return 'text-muted-foreground'
-  })()
-
   return (
     <Link
       href={`/task/${id}`}
@@ -57,14 +36,6 @@ export default function TaskRow({
     >
       <div className="flex items-center gap-2.5 h-10 px-2">
         <PriorityDiamond priority={priority} />
-
-        {/* Created date */}
-        <span className="hidden md:inline-block w-[50px] text-right text-[11px] font-mono text-muted-foreground shrink-0">
-          {formatDate(createdAt)}
-        </span>
-
-        {/* Vertical separator */}
-        <Separator orientation="vertical" className="hidden md:block h-5" />
 
         {/* Title */}
         <span className={cn(
@@ -75,21 +46,11 @@ export default function TaskRow({
         </span>
 
         {/* Assignee */}
-        <span className="hidden md:inline-block w-[130px] text-right text-xs text-muted-foreground shrink-0 truncate">
-          {assignee || '\u2014'}
-        </span>
-
-        {/* Deadline */}
-        <span
-          className={cn(
-            'w-[50px] text-right text-[11px] font-mono shrink-0',
-            deadlineColor,
-            deadline && !done && 'font-medium',
-          )}
-          title={deadline ? formatFullDate(deadline) : undefined}
-        >
-          {deadline ? formatDate(deadline) : ''}
-        </span>
+        {assignee && (
+          <span className="hidden md:inline-block text-right text-xs text-muted-foreground shrink-0 truncate max-w-[130px]">
+            {assignee}
+          </span>
+        )}
       </div>
     </Link>
   )
