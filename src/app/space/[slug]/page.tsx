@@ -44,7 +44,7 @@ export default async function SpacePage({ params }: {
   const pctDone = total > 0 ? Math.round((doneTasks.length / total) * 100) : 0
 
   return (
-    <div className="px-4 md:px-8 pb-10 max-w-3xl">
+    <div className="px-4 md:px-8 pb-10">
       <div className="h-[52px] flex items-center gap-2.5">
         <Hexagon className="h-4 w-4 shrink-0" style={{ color }} />
         <span className="text-[15px] font-semibold text-foreground">{space.name}</span>

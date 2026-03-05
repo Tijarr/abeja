@@ -52,7 +52,7 @@ export function TasksPageClient({ tasks, spaces, statusFilter, currentSpace, cur
   }
 
   return (
-    <div className="px-4 md:px-8 pb-10 max-w-3xl">
+    <div className="px-4 md:px-8 pb-10">
       <div className="h-[52px] flex items-center gap-2.5">
         <span className="text-[15px] font-semibold text-foreground">Tareas</span>
         <span className="text-xs font-mono text-muted-foreground">{tasks.length}</span>
