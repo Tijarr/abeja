@@ -11,7 +11,7 @@ function normalizeTitle(text: string): string {
   ]
   for (const f of fillers) t = t.replace(f, '')
   t = t.charAt(0).toUpperCase() + t.slice(1)
-  return t.substring(0, 80)
+  return t.substring(0, 200)
 }
 
 export async function GET(req: Request) {

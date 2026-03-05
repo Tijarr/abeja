@@ -73,7 +73,7 @@ function TaskList({ tasks, emptyLabel, done = false, showHint = false }: {
         <TaskRow
           key={t.id}
           id={t.id}
-          title={t.title || t.body}
+          title={t.body || t.title || ''}
           priority={t.priority}
           createdAt={t.createdAt}
           assignee={t.assignee}

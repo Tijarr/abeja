@@ -102,7 +102,7 @@ export function TasksPageClient({ tasks, spaces, statusFilter, currentSpace, cur
           <TaskRow
             key={t.id}
             id={t.id}
-            title={t.title || t.body}
+            title={t.body || t.title || ''}
             priority={t.priority}
             createdAt={t.createdAt}
             assignee={t.assignee}

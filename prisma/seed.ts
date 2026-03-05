@@ -68,7 +68,7 @@ function parseMdFile(filePath: string): ParsedCapture[] {
     }
 
     if (cap.body && cap.capRef) {
-      if (!cap.title) cap.title = cap.body.substring(0, 80)
+      if (!cap.title) cap.title = cap.body.substring(0, 200)
       captures.push(cap as ParsedCapture)
     }
   }
@@ -129,7 +129,7 @@ async function main() {
               create: {
                 spaceId: space.id,
                 type: cap.type,
-                title: cap.title || cap.body.substring(0, 80),
+                title: cap.title || cap.body.substring(0, 200),
                 body: cap.body,
                 tags: cap.tags || [],
                 capRef: cap.capRef,
@@ -141,7 +141,7 @@ async function main() {
                 createdAt: new Date(cap.date),
               },
               update: {
-                title: cap.title || cap.body.substring(0, 80),
+                title: cap.title || cap.body.substring(0, 200),
                 body: cap.body,
                 type: cap.type,
                 status: cap.status || null,
